@@ -1,0 +1,13 @@
+# Neovim
+.DS_Store
+
+# Lua
+*.luac
+
+# Log files
+*.log
+
+# Cache
+cache/
+.cache/
+
