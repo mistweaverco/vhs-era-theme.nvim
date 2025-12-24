@@ -1,5 +1,3 @@
-local config = require("vhs-era-theme").config
-local path = require("vhs-era-theme.lib.path")
 local base_cache_dir = vim.fn.stdpath("cache") .. "/vhs-era-theme"
 local nested_cache_dir = base_cache_dir .. "/vhs-era-theme"
 
@@ -13,6 +11,7 @@ local cache_path = nested_cache_dir .. "/cache.lua"
 local M = {}
 
 M.clear = function()
+  local config = require("vhs-era-theme").config
   if config.disable_cache or config.hot_reload then
     return
   end
@@ -22,6 +21,7 @@ M.clear = function()
 end
 
 M.exists = function()
+  local config = require("vhs-era-theme").config
   if config.disable_cache or config.hot_reload then
     return false
   end
@@ -29,6 +29,7 @@ M.exists = function()
 end
 
 M.write = function(colors)
+  local config = require("vhs-era-theme").config
   if config.disable_cache or config.hot_reload then
     return
   end
@@ -40,6 +41,7 @@ M.write = function(colors)
 end
 
 M.read = function()
+  local config = require("vhs-era-theme").config
   if config.disable_cache or config.hot_reload then
     return nil
   end
