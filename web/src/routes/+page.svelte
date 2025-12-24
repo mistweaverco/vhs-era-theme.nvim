@@ -1,0 +1,95 @@
+<script lang="ts">
+	import HeadComponent from '$lib/HeadComponent.svelte';
+
+	const handleAnchorClick = (evt: Event) => {
+		evt.preventDefault();
+		const link = evt.currentTarget as HTMLAnchorElement;
+		const anchorId = new URL(link.href).hash.replace('#', '');
+		const anchor = document.getElementById(anchorId);
+		window.scrollTo({
+			top: anchor?.offsetTop,
+			behavior: 'smooth'
+		});
+	};
+	const preventGalleryJump = (evt: Event) => {
+		evt.preventDefault();
+		const link = evt.currentTarget as HTMLAnchorElement;
+		const anchorId = new URL(link.href).hash.replace('#', '');
+		if (!anchorId) return;
+		// if starts with slide, prevent horizontal jump
+		if (anchorId.startsWith('slide')) {
+			const currentScroll = window.scrollY;
+			const anchor = document.getElementById(anchorId);
+			anchor?.scrollIntoView({ behavior: 'smooth' });
+			window.scrollTo({ top: currentScroll });
+		}
+	};
+	const images = [
+		'/snaps/snap.typescript.png',
+		'/snaps/snap.lua.png',
+		'/snaps/snap.golang.png',
+		'/snaps/snap.terraform.png',
+		'/snaps/snap.dockerfile.png'
+	];
+</script>
+
+<HeadComponent
+	data={{
+		title: 'vhs-era-theme.nvim',
+		description: 'A retro VHS era theme for Neovim, inspired by the aesthetics of the 80s and 90s.'
+	}}
+/>
+
+<div id="start" class="hero bg-base-200 min-h-screen">
+	<div class="hero-content text-center">
+		<div class="max-w-md">
+			<img src="/logo.svg" alt="vhs-era-theme logo" class="m-5 mx-auto w-64" />
+			<h1 class="text-5xl font-bold">VHS Era Theme for Neovim</h1>
+			<p class="py-6">A retro VHS era theme for Neovim, inspired by the aesthetics of the 80s and 90s.</p>
+			<a href="#screenshots" on:click={handleAnchorClick}><button class="btn btn-primary">Screenshots</button></a>
+		</div>
+	</div>
+</div>
+<div id="screenshots" class="bg-base-200 min-h-screen flex flex-col justify-center">
+	<div class="text-center mb-10">
+		<h1 class="text-5xl font-bold">Screenshots 📸</h1>
+		<p class="pt-6">Some screenshots</p>
+	</div>
+	<div class="text-center mb-10 w-full max-w-4xl mx-auto carousel carousel-center space-x-4 rounded-box">
+		{#each images as image, index}
+			<div id={'slide' + (index + 1)} class="carousel-item relative w-full">
+				<img src={image} class="w-full object-contain" />
+				<div class="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
+					<a
+						on:click={preventGalleryJump}
+						href={'#slide' + (index === 0 ? images.length : index)}
+						class="btn btn-circle">❮</a
+					>
+					<a
+						on:click={preventGalleryJump}
+						href={'#slide' + (index === images.length - 1 ? 1 : index + 2)}
+						class="btn btn-circle">❯</a
+					>
+				</div>
+			</div>
+		{/each}
+	</div>
+	<div class="text-center">
+		<p>
+			<a href="#get-involved" on:click={handleAnchorClick}
+				><button class="btn btn-secondary mt-5">Get involved</button></a
+			>
+		</p>
+	</div>
+</div>
+<div id="get-involved" class="hero bg-base-200 min-h-screen">
+	<div class="hero-content text-center">
+		<div class="max-w-md">
+			<h1 class="text-5xl font-bold">Get involved ❤️</h1>
+			<p class="py-6">vhs-era-theme.nvim is open-source and we welcome contributions.</p>
+			<p>
+				View the <a class="text-secondary" href="https://github.com/mistweaverco/vhs-era-theme.nvim">code.</a>
+			</p>
+		</div>
+	</div>
+</div>
