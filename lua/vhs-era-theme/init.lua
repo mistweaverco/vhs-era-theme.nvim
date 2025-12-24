@@ -13,7 +13,8 @@ function M.reload()
 end
 
 function M.load()
-  require("vhs-era-theme.colorscheme")
+  local load_colorscheme = require("vhs-era-theme.colorscheme")
+  load_colorscheme()
   vim.g.colors_name = "vhs-era-theme"
 end
 
