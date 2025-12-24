@@ -29,10 +29,10 @@ local t = {
   selection = hsl("#353535"),
   search = hsl("#484848"),
   diffAdd = hsl("#42be65"), -- base13
-  diffChange = hsl("#78a9ff"), -- base09
+  diffChange = hsl("#ffcc66"), -- base09
   diffDelete = hsl("#ee5396"), -- base10
   added = hsl("#42be65"), -- base13
-  changed = hsl("#78a9ff"), -- base09
+  changed = hsl("#ffcc66"), -- base09
   deleted = hsl("#ee5396"), -- base10
 
   diffText = hsl("#78a9ff").lighten(15),
@@ -50,8 +50,9 @@ local t = {
   mergeParent = hsl("#2d2539"),
   mergeParentLabel = hsl("#3d354d"),
 
-  -- Inline diff highlighting
   diffInline = hsl("#42be65"),
+  diffInlineAdd = hsl("#42be65"),
+  diffInlineDelete = hsl("#ff6666"),
 }
 
 -- Generate shades for backgrounds and UI
@@ -124,10 +125,10 @@ colors["CursorIM"] = colors["Cursor"]
 colors["Directory"] = { fg = t.keyword }
 
 -- Diffs
-colors["DiffAdd"] = { bg = t.diffAdd.mix(t.bg, 12), fg = t.bg.darken(25) }
-colors["DiffChange"] = { bg = t.diffChange.mix(t.bg, 12), fg = t.bg.darken(25) }
-colors["DiffDelete"] = { bg = t.diffDelete.mix(t.bg, 12), fg = t.bg.darken(25) }
-colors["DiffText"] = { bg = t.diffInline.mix(t.bg, 15), fg = t.bg.darken(30) }
+colors["DiffAdd"] = { bg = t.bg.darken(25), fg = t.diffAdd.desaturate(40).mix(t.bg, 30) }
+colors["DiffChange"] = { bg = t.bg.darken(25), fg = t.diffChange.desaturate(40).mix(t.bg, 30) }
+colors["DiffDelete"] = { bg = t.bg.darken(25), fg = t.diffDelete.desaturate(40).mix(t.bg, 30) }
+colors["DiffText"] = { bg = t.diffInline.desaturate(40).mix(t.bg, 35), fg = t.bg.darken(30) }
 
 -- Misc UI
 colors["EndOfBuffer"] = { fg = t.punctuation }
@@ -306,10 +307,10 @@ colors["GitSignsChangeLn"] = { bg = t.changed.mix(t.bg, 15) }
 colors["GitSignsDeleteLn"] = { bg = t.deleted.mix(t.bg, 15) }
 
 -- Git related
-colors["GitGutterAdd"] = { fg = t.added, bg = t.added.mix(t.bg, 15) }
-colors["GitGutterChange"] = { fg = t.changed, bg = t.changed.mix(t.bg, 15) }
-colors["GitGutterDelete"] = { fg = t.deleted, bg = t.deleted.mix(t.bg, 15) }
-colors["GitGutterChangeDelete"] = { fg = t.number, bg = t.number.mix(t.bg, 15) }
+colors["GitGutterAdd"] = { fg = t.added }
+colors["GitGutterChange"] = { fg = t.changed }
+colors["GitGutterDelete"] = { fg = t.deleted }
+colors["GitGutterChangeDelete"] = { fg = t.number }
 colors["GitBlame"] = { fg = t.comment, bg = t.comment.mix(t.bg, 10) }
 colors["GitBlameLine"] = { fg = t.fg, bg = t.grey7 }
 
@@ -511,19 +512,23 @@ colors["MasonError"] = colors["Error"]
 colors["MasonHeading"] = { gui = "bold,underline", fg = t.fg }
 
 -- Neogit
-colors["NeogitHunkHeader"] = { bg = t.bg, fg = t.added }
-colors["NeogitDiffContext"] = { bg = t.bg, fg = t.fg }
-colors["NeogitDiffAdd"] = { bg = t.added.mix(t.bg, 8), fg = t.bg.darken(25) }
-colors["NeogitDiffDelete"] = { bg = t.deleted.mix(t.bg, 8), fg = t.bg.darken(25) }
-colors["NeogitDiffHeader"] = { bg = t.bg, fg = t.added }
-colors["NeogitActiveItem"] = { bg = t.primary.mix(t.bg, 20), fg = t.bg.darken(10) }
-colors["NeogitHunkHeaderHighlight"] = { bg = t.added.mix(t.bg, 10), fg = t.bg.darken(15) }
-colors["NeogitDiffContextHighlight"] = { bg = t.grey7, fg = t.fg }
-colors["NeogitDiffAddHighlight"] = { bg = t.added.mix(t.bg, 12), fg = t.bg.darken(30) }
-colors["NeogitDiffDeleteHighlight"] = { bg = t.deleted.mix(t.bg, 12), fg = t.bg.darken(30) }
-colors["NeogitDiffHeaderHighlight"] = { bg = t.added.mix(t.bg, 10), fg = t.bg.darken(15) }
-colors["NeogitDiffAddInline"] = { bg = t.diffInline.mix(t.bg, 15), fg = t.bg.darken(30) }
-colors["NeogitDiffDeleteInline"] = { bg = t.deleted.mix(t.bg, 15), fg = t.bg.darken(30) }
+colors["NeogitHunkHeader"] = { fg = t.fg, bg = t.comment }
+colors["NeogitHunkHeaderCursor"] = { fg = t.fg, bg = t.selection }
+colors["NeogitHunkHeaderHighlight"] = { fg = t.fg, bg = t.comment.darken(10) }
+colors["NeogitDiffContext"] = { fg = t.fg.mix(t.bg, 90), bg = t.bg }
+colors["NeogitDiffAdd"] = { fg = t.added, bg = "NONE" }
+colors["NeogitDiffDelete"] = { fg = t.deleted, bg = "NONE" }
+colors["NeogitDiffHeader"] = { fg = t.fg, bg = "NONE" }
+colors["NeogitActiveItem"] = { bg = t.bg.darken(20) }
+colors["NeogitDiffContextHighlight"] = { fg = t.fg.mix(t.bg, 90), bg = t.bg.darken(20) }
+colors["NeogitDiffContextCursor"] = { fg = t.primary, bg = t.primary.mix(t.bg, 90) }
+colors["NeogitDiffAddHighlight"] = { fg = t.added, bg = t.added.mix(t.bg, 90) }
+colors["NeogitDiffAddCursor"] = { bg = t.added, fg = t.added.mix(t.bg, 90) }
+colors["NeogitDiffDeleteHighlight"] = { fg = t.deleted, bg = t.deleted.mix(t.bg, 90) }
+colors["NeogitDiffDeleteCursor"] = { bg = t.deleted, fg = t.deleted.mix(t.bg, 90) }
+colors["NeogitDiffHeaderHighlight"] = { fg = t.fg, bg = "NONE" }
+colors["NeogitDiffAddInline"] = { fg = t.diffInlineAdd, bg = t.diffInlineAdd.mix(t.bg, 90) }
+colors["NeogitDiffDeleteInline"] = { fg = t.diffInlineDelete, bg = t.diffInlineDelete.mix(t.bg, 90) }
 
 -- Which-key
 colors["WhichKey"] = colors["Character"]
@@ -532,27 +537,27 @@ colors["WhichKeySeparator"] = colors["Operator"]
 colors["WhichKeyDesc"] = colors["@text.title"]
 
 -- Diffview
-colors["DiffviewStatusAdded"] = { fg = t.added, bg = t.added.mix(t.bg, 15) }
-colors["DiffviewStatusModified"] = { fg = t.changed, bg = t.changed.mix(t.bg, 15) }
-colors["DiffviewStatusRenamed"] = { fg = t.changed, bg = t.changed.mix(t.bg, 15) }
-colors["DiffviewStatusCopied"] = { fg = t.changed, bg = t.changed.mix(t.bg, 15) }
-colors["DiffviewStatusTypeChanged"] = { fg = t.changed, bg = t.changed.mix(t.bg, 15) }
-colors["DiffviewStatusUnmerged"] = { fg = t.number, bg = t.number.mix(t.bg, 15) }
-colors["DiffviewStatusUnknown"] = { fg = t.property, bg = t.property.mix(t.bg, 15) }
-colors["DiffviewStatusDeleted"] = { fg = t.deleted, bg = t.deleted.mix(t.bg, 15) }
-colors["DiffviewStatusIgnored"] = { fg = t.comment, bg = t.comment.mix(t.bg, 15) }
-colors["DiffviewFilePanelInsertions"] = { fg = t.added, bg = t.added.mix(t.bg, 10) }
-colors["DiffviewFilePanelDeletions"] = { fg = t.deleted, bg = t.deleted.mix(t.bg, 10) }
-colors["DiffviewFilePanelRootPath"] = { fg = t.tag, bg = t.tag.mix(t.bg, 10) }
-colors["DiffviewFilePanelTitle"] = { fg = t.constant, bg = t.constant.mix(t.bg, 10) }
-colors["DiffviewFilePanelCounter"] = { fg = t.attribute, bg = t.attribute.mix(t.bg, 10) }
-colors["DiffviewFilePanelPath"] = { fg = t.comment, bg = t.comment.mix(t.bg, 10) }
-colors["DiffviewFilePanelConflicts"] = { fg = t.number, bg = t.number.mix(t.bg, 10) }
+colors["DiffviewStatusAdded"] = { fg = t.added, bg = t.added.mix(t.bg, 90) }
+colors["DiffviewStatusModified"] = { fg = t.changed, bg = t.changed.mix(t.bg, 90) }
+colors["DiffviewStatusRenamed"] = { fg = t.changed, bg = t.changed.mix(t.bg, 90) }
+colors["DiffviewStatusCopied"] = { fg = t.changed, bg = t.changed.mix(t.bg, 90) }
+colors["DiffviewStatusTypeChanged"] = { fg = t.changed, bg = t.changed.mix(t.bg, 90) }
+colors["DiffviewStatusUnmerged"] = { fg = t.number, bg = t.number.mix(t.bg, 90) }
+colors["DiffviewStatusUnknown"] = { fg = t.property, bg = t.property.mix(t.bg, 90) }
+colors["DiffviewStatusDeleted"] = { fg = t.deleted, bg = t.deleted.mix(t.bg, 90) }
+colors["DiffviewStatusIgnored"] = { fg = t.comment, bg = t.comment.mix(t.bg, 90) }
+colors["DiffviewFilePanelInsertions"] = { fg = t.added, bg = t.added.mix(t.bg, 90) }
+colors["DiffviewFilePanelDeletions"] = { fg = t.deleted, bg = t.deleted.mix(t.bg, 90) }
+colors["DiffviewFilePanelRootPath"] = { fg = t.tag, bg = t.tag.mix(t.bg, 90) }
+colors["DiffviewFilePanelTitle"] = { fg = t.constant, bg = t.constant.mix(t.bg, 90) }
+colors["DiffviewFilePanelCounter"] = { fg = t.attribute, bg = t.attribute.mix(t.bg, 90) }
+colors["DiffviewFilePanelPath"] = { fg = t.comment, bg = t.comment.mix(t.bg, 90) }
+colors["DiffviewFilePanelConflicts"] = { fg = t.number, bg = t.number.mix(t.bg, 90) }
 colors["DiffviewFolderName"] = colors["Directory"]
-colors["DiffviewPrimary"] = { fg = t.keyword, bg = t.keyword.mix(t.bg, 10) }
-colors["DiffviewSecondary"] = { fg = t.tag, bg = t.tag.mix(t.bg, 10) }
-colors["DiffviewDiffAdd"] = { bg = t.diffInline.mix(t.bg, 15), fg = t.bg.darken(30) }
-colors["DiffviewDiffDelete"] = { bg = t.deleted.mix(t.bg, 15), fg = t.bg.darken(30) }
+colors["DiffviewPrimary"] = { fg = t.keyword, bg = t.keyword.mix(t.bg, 90) }
+colors["DiffviewSecondary"] = { fg = t.tag, bg = t.tag.mix(t.bg, 90) }
+colors["DiffviewDiffAdd"] = { bg = t.added.mix(t.bg, 90), fg = t.added }
+colors["DiffviewDiffDelete"] = { bg = t.deleted.mix(t.bg, 90), fg = t.added }
 
 -- vim-fugitive
 colors["diffAdded"] = { fg = t.added, bg = t.diffInline.mix(t.bg, 15) }
