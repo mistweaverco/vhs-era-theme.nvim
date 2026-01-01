@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import HeadComponent from '$lib/HeadComponent.svelte';
 	import screenshotsDataJSON from './screenshots.json';
 
@@ -95,6 +96,27 @@
 	$: screenshots;
 	$: screenshotSelectedLanguage;
 	$: screenshotSelectedPlugin;
+
+	const lazyload = (node: HTMLImageElement) => {
+		const observer = new IntersectionObserver(
+			(entries, obs) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						const img = entry.target as HTMLImageElement;
+						img.src = img.dataset.src || '';
+						obs.unobserve(img);
+					}
+				});
+			},
+			{ rootMargin: '50px' }
+		);
+		observer.observe(node);
+		return {
+			destroy() {
+				observer.unobserve(node);
+			}
+		};
+	};
 </script>
 
 <HeadComponent
@@ -169,13 +191,7 @@
 			<div id={'slide' + (index + 1)} class="carousel-item relative">
 				<div bind:this={slideEls[index]} class="card bg-base-100 shadow-xl mx-auto w-full max-w-3xl">
 					<figure>
-						<img
-							onload={() => measure(index)}
-							loading="lazy"
-							src={image.src}
-							alt={image.alt}
-							class="image {index === activeIndex ? 'active' : ''}"
-						/>
+						<img onload={() => measure(index)} use:lazyload data-src={image.src} alt={image.alt} class="image" />
 					</figure>
 					<div class="card-body">
 						<h2 class="card-title justify-center">{image.title}</h2>
@@ -221,7 +237,7 @@
 
 <style>
 	.carousel {
-		overflow: hidden;
+		overflow-y: hidden;
 	}
 	.carousel-item {
 		position: relative;
@@ -234,16 +250,6 @@
 	.image {
 		width: 100%;
 		height: auto;
-
-		opacity: 0;
 		pointer-events: none;
-		transition:
-			opacity 300ms ease,
-			transform 300ms ease;
-	}
-
-	.image.active {
-		opacity: 1;
-		pointer-events: auto;
 	}
 </style>
