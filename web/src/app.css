@@ -35,3 +35,7 @@ div.code-toolbar > .toolbar > .toolbar-item > button {
 div.code-toolbar > .toolbar > .toolbar-item {
   color: #e6caa8;
 }
+
+.mdsvex-shiki div.header {
+  margin-bottom: 1rem;
+}
