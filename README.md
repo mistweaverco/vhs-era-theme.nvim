@@ -23,6 +23,7 @@ the anticipation of recording favorite programs,
 and the physical nature of tapes that had to
 be rewound and could degrade over time.
 
+This retro colorscheme for Neovim, is inspired by the aesthetics of this era.
 <p></p>
 
 </div>
@@ -30,7 +31,7 @@ be rewound and could degrade over time.
 ## Requirements
 
 > [!WARNING]
-> Requires Neovim 0.10.0+.
+> Requires Neovim 0.11.5+.
 
 ## Install
 
