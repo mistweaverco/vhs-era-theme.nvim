@@ -1,38 +1,24 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { mdsvexShiki } from '@mistweaverco/mdsvex-shiki';
+	import { onMount, tick } from 'svelte';
+	import { pushState } from '$app/navigation';
 	import HeadComponent from '$lib/HeadComponent.svelte';
-	import screenshotsDataJSON from './screenshots.json';
-	import installCodeLazy from './install-code-lazy.lua?raw';
-	import installCodePacker from './install-code-packer.lua?raw';
-	import installCodeVimPlug from './install-code-vimplug.lua?raw';
+	import { InstallationMethod } from '$lib/enums';
+	import type { Screenshot } from '$lib/types.js';
 
-	interface Screenshot {
-		src: string;
-		alt: string;
-		title: string;
-		text: string;
-	}
+	const { data } = $props();
 
-	interface ScreenshotData {
-		languages: {
-			name: string;
-			icon?: string;
-			items: Screenshot[];
-		}[];
-		plugins: {
-			name: string;
-			icon?: string;
-			items: Screenshot[];
-		}[];
-	}
-
-	let activeIndex = 0;
-	let heights: number[] = [];
-	let slideEls: HTMLElement[] = [];
-	let screenshotImgEls: HTMLImageElement[] = [];
-	let containerHeight = 0;
-	let installCode: string = '';
+	let activeIndex = $state(0);
+	let heights: number[] = $state([]);
+	let slideEls: HTMLElement[] = $state([]);
+	let screenshotImgEls: HTMLImageElement[] = $state([]);
+	let containerHeight = $state(0);
+	let installCode: string = $state('');
+	let screenshots: Screenshot[] = $state([]);
+	let screenshotSelectedCategory: string | null = $state(null);
+	let screenshotSelectedLanguage: string | null = $state(null);
+	let screenshotSelectedPlugin: string | null = $state(null);
+	let screenshotSelectedLanguageIcon: string | null = $state(null);
+	let screenshotSelectedPluginIcon: string | null = $state(null);
 
 	function measure(index: number) {
 		const el = slideEls[index];
@@ -41,32 +27,26 @@
 		if (index === activeIndex) containerHeight = heights[index];
 	}
 
-	const screenshotData: ScreenshotData = screenshotsDataJSON as ScreenshotData;
-	let screenshots: Screenshot[] = [];
-
-	let screenshotSelectedLanguage: string | null = null;
-	let screenshotSelectedPlugin: string | null = null;
-	let screenshotSelectedLanguageIcon: string | null = null;
-	let screenshotSelectedPluginIcon: string | null = null;
-
 	const onScreenshotSelect = (evt: Event) => {
+		activeIndex = 0;
 		const target = evt.target as HTMLDivElement;
 		const idx = parseInt(target.getAttribute('data-idx') || '0');
 		const type = target.getAttribute('data-type');
-		activeIndex = 0;
-		if (target.blur) target.blur();
+		screenshotSelectedCategory = type;
+		// TODO: refactor to pass data directly instead of faking events
+		// also blur dropdowns after selection
 		if (type === 'language') {
-			const data = screenshotData.languages[idx];
-			screenshots = data.items;
-			screenshotSelectedLanguage = data.name;
-			screenshotSelectedLanguageIcon = data.icon || null;
+			const d = data.screenshotsData.languages[idx];
+			screenshots = d.items;
+			screenshotSelectedLanguage = d.name;
+			screenshotSelectedLanguageIcon = d.icon || null;
 			screenshotSelectedPlugin = null;
 			screenshotSelectedPluginIcon = null;
 		} else if (type === 'plugin') {
-			const data = screenshotData.plugins[idx];
-			screenshots = data.items;
-			screenshotSelectedPlugin = data.name;
-			screenshotSelectedPluginIcon = data.icon || null;
+			const d = data.screenshotsData.plugins[idx];
+			screenshots = d.items;
+			screenshotSelectedPlugin = d.name;
+			screenshotSelectedPluginIcon = d.icon || null;
 			screenshotSelectedLanguage = null;
 			screenshotSelectedLanguageIcon = null;
 		}
@@ -75,35 +55,50 @@
 	const handleAnchorClick = (evt: Event) => {
 		evt.preventDefault();
 		const link = evt.currentTarget as HTMLAnchorElement;
-		const anchorId = new URL(link.href).hash.replace('#', '');
+		const url = new URL(link.href);
+		const hash = url.hash;
+		const anchorId = hash.replace('#', '');
 		const anchor = document.getElementById(anchorId);
 		window.scrollTo({
 			top: anchor?.offsetTop,
 			behavior: 'smooth'
 		});
+		pushState(url.pathname + hash, '');
 	};
 
 	const preventGalleryJump = (evt: Event) => {
 		evt.preventDefault();
 		const link = evt.currentTarget as HTMLAnchorElement;
-		const anchorId = new URL(link.href).hash.replace('#', '');
-		activeIndex = parseInt(link.getAttribute('data-idx') || '0');
-		if (!anchorId) return;
-		// if starts with slide, prevent horizontal jump
-		if (anchorId.startsWith('slide')) {
-			const currentScroll = window.scrollY;
-			const anchor = document.getElementById(anchorId);
-			anchor?.scrollIntoView({ behavior: 'smooth' });
-			window.scrollTo({ top: currentScroll });
-		}
+		const url = new URL(link.href);
+		const hash = url.hash;
+		const anchorId = hash.replace('#', '');
+		activeIndex = parseInt(link.getAttribute('data-idx') || '0', 10);
+		const slideIdx = activeIndex + 1;
+		const currentScroll = window.scrollY;
+		const anchor = document.getElementById(anchorId);
+		anchor?.scrollIntoView({ behavior: 'smooth' });
+		window.scrollTo({ top: currentScroll });
+		const newUrl =
+			url.pathname +
+			'#!/' +
+			(screenshotSelectedLanguage
+				? `screenshots/language/${encodeURIComponent(screenshotSelectedLanguage.toLowerCase())}/${slideIdx}`
+				: screenshotSelectedPlugin
+					? `screenshots/plugin/${encodeURIComponent(screenshotSelectedPlugin.toLowerCase())}/${slideIdx}`
+					: '');
+		if (newUrl === window.location.pathname + window.location.hash) return;
+		pushState(
+			url.pathname +
+				'#!/' +
+				(screenshotSelectedLanguage
+					? `screenshots/language/${encodeURIComponent(screenshotSelectedLanguage.toLowerCase())}/${slideIdx}`
+					: screenshotSelectedPlugin
+						? `screenshots/plugin/${encodeURIComponent(screenshotSelectedPlugin.toLowerCase())}/${slideIdx}`
+						: ''),
+			''
+		);
 	};
 
-	$: containerHeight = heights[activeIndex] ?? containerHeight;
-	$: screenshots;
-	$: screenshotSelectedLanguage;
-	$: screenshotSelectedPlugin;
-
-	// Make sure this also works, for when data-src is changed
 	const lazyload = (node: HTMLImageElement) => {
 		const mutationObserver = new MutationObserver((mutations) => {
 			mutations.forEach((mutation) => {
@@ -137,90 +132,96 @@
 		};
 	};
 
-	enum InstallationMethod {
-		Lazy,
-		Packer,
-		VimPlug,
-		Manual
-	}
-
-	let shikiPreprocessor: Promise<(code: string, lang: string, info: string) => Promise<string>>;
-
-	const getInstallCode = async (method: InstallationMethod) => {
-		const shikiPreprocessor = await mdsvexShiki({});
-		let codeSnippet = '';
+	const onInstallationMethodChange = async (evt: Event) => {
+		const target = evt.target as HTMLSelectElement;
+		const method = target.selectedIndex;
 		switch (method) {
 			case InstallationMethod.Lazy:
-				codeSnippet = installCodeLazy;
+				installCode = data.lazyInstallCode;
 				break;
 			case InstallationMethod.Packer:
-				codeSnippet = installCodePacker;
+				installCode = data.packerInstallCode;
 				break;
 			case InstallationMethod.VimPlug:
-				codeSnippet = installCodeVimPlug;
+				installCode = data.vimPlugInstallCode;
 				break;
+			default:
+				installCode = data.lazyInstallCode;
 		}
-		codeSnippet += '\n-- Then set the colorscheme\nvim.cmd("colorscheme vhs-era-theme")';
-		return await shikiPreprocessor(codeSnippet, 'lua', 'path=nvim/init.lua');
 	};
 
-	const onInstallationMethodChange = async (method: InstallationMethod) => {
-		installCode = await getInstallCode(method);
-	};
-
-	const onDeepLink = () => {
+	const onDeepLink = async () => {
 		const hash = window.location.hash;
 		if (hash && hash.startsWith('#!/')) {
 			const deepLink = hash.replace('#!/', '');
 			if (deepLink.startsWith('screenshots')) {
 				const anchor = document.getElementById('screenshots');
 				window.scrollTo({
-					top: anchor?.offsetTop,
-					behavior: 'smooth'
+					top: anchor?.offsetTop
 				});
 				const parts = deepLink.split('/');
-				if (parts.length !== 3) {
-					console.warn(`Invalid deep link format: "${deepLink}"`);
-				} else {
-					// parts[1] = type (language/plugin)
-					// parts[2] = name
-					if (parts.length < 3) {
-						console.warn(`Invalid deep link format: "${deepLink}"`);
-						return;
+				if (parts.length < 3) {
+					return;
+				}
+				const type = parts[1];
+				const name = decodeURIComponent(parts[2]);
+				const slideIdx = parts.length === 4 ? parts[3] : null;
+				const slideIdxNum = slideIdx ? parseInt(slideIdx, 10) : 1;
+				if (type === 'language') {
+					for (const [idx, item] of data.screenshotsData.languages.entries()) {
+						if (item.name.toLowerCase() === name.toLowerCase()) {
+							onScreenshotSelect({
+								target: {
+									getAttribute: (attr: string) => {
+										if (attr === 'data-idx') return idx.toString();
+										if (attr === 'data-type') return 'language';
+										return null;
+									}
+								}
+							} as unknown as Event);
+							if (slideIdxNum !== null) {
+								await tick();
+								preventGalleryJump({
+									preventDefault: () => {},
+									currentTarget: {
+										href: new URL(`#slide${slideIdx}`, window.location.href).toString(),
+										getAttribute: (attr: string) => {
+											if (attr === 'data-idx') return slideIdxNum - 1;
+											return null;
+										}
+									}
+								} as unknown as Event);
+							}
+							break;
+						}
 					}
-					const type = parts[1];
-					const name = decodeURIComponent(parts.slice(2).join('/'));
-					let found = false;
-					if (type === 'language') {
-						screenshotData.languages.forEach((item, idx) => {
-							if (item.name.toLowerCase() === name.toLowerCase()) {
-								onScreenshotSelect({
-									target: {
+				} else if (type === 'plugin') {
+					for (const [idx, item] of data.screenshotsData.plugins.entries()) {
+						if (item.name.toLowerCase() === name.toLowerCase()) {
+							onScreenshotSelect({
+								target: {
+									getAttribute: (attr: string) => {
+										if (attr === 'data-idx') return idx.toString();
+										if (attr === 'data-type') return 'plugin';
+										return null;
+									}
+								}
+							} as unknown as Event);
+							if (slideIdxNum !== null) {
+								await tick();
+								preventGalleryJump({
+									preventDefault: () => {},
+									currentTarget: {
+										href: new URL(`#slide${slideIdx}`, window.location.href).toString(),
 										getAttribute: (attr: string) => {
-											if (attr === 'data-idx') return idx.toString();
-											if (attr === 'data-type') return 'language';
+											if (attr === 'data-idx') return slideIdxNum - 1;
 											return null;
 										}
 									}
 								} as unknown as Event);
-								found = true;
 							}
-						});
-					} else if (type === 'plugin') {
-						screenshotData.plugins.forEach((item, idx) => {
-							if (item.name.toLowerCase() === name.toLowerCase()) {
-								onScreenshotSelect({
-									target: {
-										getAttribute: (attr: string) => {
-											if (attr === 'data-idx') return idx.toString();
-											if (attr === 'data-type') return 'plugin';
-											return null;
-										}
-									}
-								} as unknown as Event);
-								found = true;
-							}
-						});
+							break;
+						}
 					}
 				}
 			}
@@ -228,10 +229,9 @@
 	};
 
 	onMount(async () => {
-		window.addEventListener('navigate', onDeepLink);
+		await tick();
+		window.addEventListener('hashchange', onDeepLink);
 		onDeepLink();
-		// @ts-ignore
-		shikiPreprocessor = await mdsvexShiki({});
 	});
 </script>
 
@@ -315,14 +315,19 @@
 				{screenshotSelectedLanguage ? screenshotSelectedLanguage : 'Languages'}
 			</button>
 			<ul class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-				{#each screenshotData.languages as item, idx (idx)}
+				{#each data.screenshotsData.languages as item, idx (idx)}
 					<li>
-						<button onclick={onScreenshotSelect} data-type="language" data-idx={idx} class="flex items-center gap-2">
+						<a
+							href="#!/screenshots/language/{item.name.toLowerCase()}/1"
+							data-type="language"
+							data-idx={idx}
+							class="flex items-center gap-2"
+						>
 							{#if item.icon}
 								<i class={item.icon}></i>
 							{/if}
 							{item.name}
-						</button>
+						</a>
 					</li>
 				{/each}
 			</ul>
@@ -342,14 +347,19 @@
 				{screenshotSelectedPlugin ? screenshotSelectedPlugin : 'Plugins'}
 			</button>
 			<ul class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-				{#each screenshotData.plugins as item, idx (idx)}
+				{#each data.screenshotsData.plugins as item, idx (idx)}
 					<li>
-						<button onclick={onScreenshotSelect} data-type="plugin" data-idx={idx} class="flex items-center gap-2">
+						<a
+							href="#!/screenshots/plugin/{item.name.toLowerCase()}/1"
+							data-type="plugin"
+							data-idx={idx}
+							class="flex items-center gap-2"
+						>
 							{#if item.icon}
 								<i class={item.icon}></i>
 							{/if}
 							{item.name}
-						</button>
+						</a>
 					</li>
 				{/each}
 			</ul>
@@ -389,8 +399,12 @@
 					<div class="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
 						{#if index !== 0}
 							<a
-								onclick={preventGalleryJump}
-								href={'#slide' + index}
+								href={'#!/screenshots/' +
+									screenshotSelectedCategory +
+									'/' +
+									screenshotSelectedPlugin?.toLocaleLowerCase() +
+									'/' +
+									index}
 								data-idx={index - 1}
 								class="btn btn-circle btn-soft btn-secondary">❮</a
 							>
@@ -399,8 +413,12 @@
 						{/if}
 						{#if index !== screenshots.length - 1}
 							<a
-								onclick={preventGalleryJump}
-								href={'#slide' + (index + 2)}
+								href={'#!/screenshots/' +
+									screenshotSelectedCategory +
+									'/' +
+									screenshotSelectedPlugin?.toLocaleLowerCase() +
+									'/' +
+									(index + 2)}
 								data-idx={index + 1}
 								class="btn btn-circle btn-soft btn-secondary">❯</a
 							>
@@ -414,34 +432,37 @@
 	</div>
 	<div class="text-center">
 		<p>
-			<a href="#install" onclick={handleAnchorClick}><button class="btn btn-secondary mt-5">Installation</button></a>
+			<a href="#installation" onclick={handleAnchorClick}
+				><button class="btn btn-secondary mt-5">Installation</button></a
+			>
 		</p>
 	</div>
 </div>
 
-<div id="install" class="hero bg-base-200 min-h-screen">
-	<div class="hero-content text-center">
-		<div class="max-w-xl">
-			<h1 class="text-5xl font-bold">Installation 🚀</h1>
-			<p class="pt-6 mb-6">How to install the theme</p>
-			<select
-				class="select select-bordered w-full max-w-xs mb-6"
-				onchange={(e) => onInstallationMethodChange(e.target.selectedIndex)}
-			>
-				<option disabled selected>Select</option>
-				<option>Lazy.nvim</option>
-				<option>Packer.nvim</option>
-				<option>Vim-Plug</option>
-			</select>
-			<div class="w-full p-6 m-6 relative text-left">
-				{@html installCode}
-			</div>
-			<p>
-				<a href="#get-involved" onclick={handleAnchorClick}
-					><button class="btn btn-secondary mt-5">Get involved</button></a
-				>
-			</p>
+<div id="installation" class="bg-base-200 min-h-screen flex flex-col justify-center">
+	<div class="text-center mb-10">
+		<h1 class="text-5xl font-bold">Installation 🚀</h1>
+		<p class="pt-6">How to install the theme</p>
+	</div>
+	<div class="text-center mb-10">
+		<select class="select select-bordered mb-6" onchange={onInstallationMethodChange}>
+			<option disabled selected>Select</option>
+			<option>Lazy.nvim</option>
+			<option>Packer.nvim</option>
+			<option>Vim-Plug</option>
+		</select>
+	</div>
+	<div class="text-center mb-10 w-full mx-auto carousel carousel-center space-x-4 rounded-box max-w-4xl">
+		<div class="m-auto text-left">
+			{@html installCode}
 		</div>
+	</div>
+	<div class="text-center mb-10">
+		<p>
+			<a href="#get-involved" onclick={handleAnchorClick}
+				><button class="btn btn-secondary mt-5">Get involved</button></a
+			>
+		</p>
 	</div>
 </div>
 <div id="get-involved" class="hero bg-base-200 min-h-screen">
