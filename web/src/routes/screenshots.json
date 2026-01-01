@@ -5,7 +5,7 @@
       "icon": "devicon-lua-plain",
       "items": [
         {
-          "src": "/assets/snaps/snap.lua.png",
+          "src": "/assets/snaps/languages/lua/snap.lua.png",
           "alt": "Lua code",
           "title": "Lua code",
           "text": "Luca code"
@@ -17,7 +17,7 @@
       "icon": "devicon-typescript-plain",
       "items": [
         {
-          "src": "/assets/snaps/snap.typescript.png",
+          "src": "/assets/snaps/languages/typescript/snap.typescript.png",
           "alt": "TypeScript code",
           "title": "TypeScript code",
           "text": "TypeScript code"
@@ -29,7 +29,7 @@
       "icon": "devicon-go-plain",
       "items": [
         {
-          "src": "/assets/snaps/snap.golang.png",
+          "src": "/assets/snaps/languages/golang/snap.golang.png",
           "alt": "Go code",
           "title": "Go code",
           "text": "Go code"
@@ -41,7 +41,7 @@
       "icon": "devicon-docker-plain",
       "items": [
         {
-          "src": "/assets/snaps/snap.dockerfile.png",
+          "src": "/assets/snaps/languages/dockerfile/snap.dockerfile.png",
           "alt": "Dockerfile code",
           "title": "Dockerfile code",
           "text": "Dockerfile code"
@@ -53,7 +53,7 @@
       "icon": "devicon-terraform-plain",
       "items": [
         {
-          "src": "/assets/snaps/snap.terraform.png",
+          "src": "/assets/snaps/languages/terraform/snap.terraform.png",
           "alt": "Terraform code",
           "title": "Terraform code",
           "text": "Terraform code"
