@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import HeadComponent from '$lib/HeadComponent.svelte';
 	import screenshotsDataJSON from './screenshots.json';
 
@@ -26,6 +25,7 @@
 	let activeIndex = 0;
 	let heights: number[] = [];
 	let slideEls: HTMLElement[] = [];
+	let screenshotImgEls: HTMLImageElement[] = [];
 	let containerHeight = 0;
 
 	function measure(index: number) {
@@ -97,23 +97,36 @@
 	$: screenshotSelectedLanguage;
 	$: screenshotSelectedPlugin;
 
+	// Make sure this also works, for when data-src is changed
 	const lazyload = (node: HTMLImageElement) => {
-		const observer = new IntersectionObserver(
+		const mutationObserver = new MutationObserver((mutations) => {
+			mutations.forEach((mutation) => {
+				if (mutation.type === 'attributes' && mutation.attributeName === 'data-src') {
+					const img = mutation.target as HTMLImageElement;
+					if (img.dataset.src) {
+						img.src = img.dataset.src;
+					}
+				}
+			});
+		});
+		mutationObserver.observe(node, { attributes: true });
+		const intersectionObserver = new IntersectionObserver(
 			(entries, obs) => {
 				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
 						const img = entry.target as HTMLImageElement;
 						img.src = img.dataset.src || '';
-						obs.unobserve(img);
+						obs.unobserve(node);
 					}
 				});
 			},
 			{ rootMargin: '50px' }
 		);
-		observer.observe(node);
+		intersectionObserver.observe(node);
 		return {
 			destroy() {
-				observer.unobserve(node);
+				intersectionObserver.unobserve(node);
+				mutationObserver.disconnect();
 			}
 		};
 	};
@@ -136,6 +149,7 @@
 		</div>
 	</div>
 </div>
+
 <div id="screenshots" class="bg-base-200 min-h-screen flex flex-col justify-center">
 	<div class="text-center mb-10">
 		<h1 class="text-5xl font-bold">Screenshots 📸</h1>
@@ -184,14 +198,21 @@
 		</div>
 	</div>
 	<div
-		class="text-center mb-10 w-full max-w-4xl mx-auto carousel carousel-center space-x-4 rounded-box"
+		class="text-center mb-10 w-full mx-auto carousel carousel-center space-x-4 rounded-box max-w-7xl"
 		style="height: {containerHeight}px"
 	>
 		{#each screenshots as image, index (index)}
 			<div id={'slide' + (index + 1)} class="carousel-item relative">
-				<div bind:this={slideEls[index]} class="card bg-base-100 shadow-xl mx-auto w-full max-w-3xl">
+				<div bind:this={slideEls[index]} class="card bg-base-100 shadow-xl mx-auto w-full">
 					<figure>
-						<img onload={() => measure(index)} use:lazyload data-src={image.src} alt={image.alt} class="image" />
+						<img
+							bind:this={screenshotImgEls[index]}
+							onload={() => measure(index)}
+							use:lazyload
+							data-src={image.src}
+							alt={image.alt}
+							class="image"
+						/>
 					</figure>
 					<div class="card-body">
 						<h2 class="card-title justify-center">{image.title}</h2>

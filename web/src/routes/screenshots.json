@@ -103,6 +103,78 @@
           "text": "Neogit status clean"
         }
       ]
+    },
+    {
+      "name": "Juu.nvim",
+      "icon": "devicon-neovim-plain",
+      "items": [
+        {
+          "src": "/assets/screenshots/plugins/juu.nvim/screenshot-juu-notification.webp",
+          "alt": "Juu.nvim notification",
+          "title": "Juu.nvim notification",
+          "text": "Juu.nvim notification"
+        },
+        {
+          "src": "/assets/screenshots/plugins/juu.nvim/screencast-juu-progress.webp",
+          "alt": "Juu.nvim progress",
+          "title": "Juu.nvim progress",
+          "text": "Juu.nvim progress"
+        },
+        {
+          "src": "/assets/screenshots/plugins/juu.nvim/screenshot-juu-input.webp",
+          "alt": "Juu.nvim input",
+          "title": "Juu.nvim input",
+          "text": "Juu.nvim input"
+        }
+      ]
+    },
+    {
+      "name": "blink-cmp",
+      "icon": "devicon-neovim-plain",
+      "items": [
+        {
+          "src": "/assets/screenshots/plugins/blink-cmp/screenshot-blink-cmp-popup.webp",
+          "alt": "blink-cmp popup",
+          "title": "blink-cmp popup",
+          "text": "blink-cmp popup"
+        },
+        {
+          "src": "/assets/screenshots/plugins/blink-cmp/screenshot-blink-cmp-popup-variables.webp",
+          "alt": "blink-cmp popup with variables",
+          "title": "blink-cmp popup with variables",
+          "text": "blink-cmp popup with variables"
+        }
+      ]
+    },
+    {
+      "name": "bafa.nvim",
+      "icon": "devicon-neovim-plain",
+      "items": [
+        {
+          "src": "/assets/screenshots/plugins/bafa.nvim/screenshot-bafa-default-ui.webp",
+          "alt": "bafa.nvim default UI",
+          "title": "bafa.nvim default UI",
+          "text": "bafa.nvim default UI"
+        },
+        {
+          "src": "/assets/screenshots/plugins/bafa.nvim/screenshot-bafa-ui-markers.webp",
+          "alt": "bafa.nvim UI with modified and marked for deletion markers",
+          "title": "bafa.nvim UI with modified and marked for deletion markers",
+          "text": "bafa.nvim UI with modified and marked for deletion markers"
+        },
+        {
+          "src": "/assets/screenshots/plugins/bafa.nvim/screenshot-bafa-ui-jump-labels.webp",
+          "alt": "bafa.nvim UI with jump labels",
+          "title": "bafa.nvim UI with jump labels",
+          "text": "bafa.nvim UI with jump labels"
+        },
+        {
+          "src": "/assets/screenshots/plugins/bafa.nvim/screenshot-bafa-ui-jump-delete-labels.webp",
+          "alt": "bafa.nvim UI with jump labels to mark buffers for deletion",
+          "title": "bafa.nvim UI with jump labels to mark buffers for deletion",
+          "text": "bafa.nvim UI with jump labels to mark buffers for deletion"
+        }
+      ]
     }
   ]
 }
