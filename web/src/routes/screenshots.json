@@ -1,80 +1,108 @@
-[
-  {
-    "src": "/assets/snaps/snap.lua.png",
-    "alt": "Lua code",
-    "title": "Lua code",
-    "text": "Luca code"
-  },
-  {
-    "src": "/assets/snaps/snap.typescript.png",
-    "alt": "TypeScript code",
-    "title": "TypeScript code",
-    "text": "TypeScript code"
-  },
-  {
-    "src": "/assets/snaps/snap.golang.png",
-    "alt": "Go code",
-    "title": "Go code",
-    "text": "Go code"
-  },
-  {
-    "src": "/assets/snaps/snap.dockerfile.png",
-    "alt": "Dockerfile code",
-    "title": "Dockerfile code",
-    "text": "Dockerfile code"
-  },
-  {
-    "src": "/assets/snaps/snap.terraform.png",
-    "alt": "Terraform code",
-    "title": "Terraform code",
-    "text": "Terraform code"
-  },
-  {
-    "src": "/assets/snaps/snap.terraform.png",
-    "alt": "Terraform code",
-    "title": "Terraform code",
-    "text": "Terraform code"
-  },
-  {
-    "src": "/assets/screenshots/plugins/neogit/screenshot-neogit-status-dirty.webp",
-    "alt": "Neogit status with changes",
-    "title": "Neogit status with changes",
-    "text": "Neogit status with changes"
-  },
-  {
-    "src": "/assets/screenshots/plugins/neogit/screenshot-neogit-status-dirty.webp",
-    "alt": "Neogit status with changes",
-    "title": "Neogit status with changes",
-    "text": "Neogit status with changes"
-  },
-  {
-    "src": "/assets/screenshots/plugins/neogit/screenshot-neogit-commit-popup.webp",
-    "alt": "Neogit commit popup",
-    "title": "Neogit commit popup",
-    "text": "Neogit commit popup"
-  },
-  {
-    "src": "/assets/screenshots/plugins/neogit/screenshot-neogit-commit-editmsg.webp",
-    "alt": "Neogit commit edit message",
-    "title": "Neogit commit edit message",
-    "text": "Neogit commit edit message"
-  },
-  {
-    "src": "/assets/screenshots/plugins/neogit/screenshot-neogit-push-popup.webp",
-    "alt": "Neogit push popup",
-    "title": "Neogit push popup",
-    "text": "Neogit push popup"
-  },
-  {
-    "src": "/assets/screenshots/plugins/neogit/screenshot-neogit-status-pushing-to-remote.webp",
-    "alt": "Neogit pushing to remote",
-    "title": "Neogit pushing to remote",
-    "text": "Neogit pushing to remote"
-  },
-  {
-    "src": "/assets/screenshots/plugins/neogit/screenshot-neogit-status-clean.webp",
-    "alt": "Neogit status clean",
-    "title": "Neogit status clean",
-    "text": "Neogit status clean"
-  }
-]
+{
+  "languages": [
+    {
+      "name": "Lua",
+      "icon": "devicon-lua-plain",
+      "items": [
+        {
+          "src": "/assets/snaps/snap.lua.png",
+          "alt": "Lua code",
+          "title": "Lua code",
+          "text": "Luca code"
+        }
+      ]
+    },
+    {
+      "name": "TypeScript",
+      "icon": "devicon-typescript-plain",
+      "items": [
+        {
+          "src": "/assets/snaps/snap.typescript.png",
+          "alt": "TypeScript code",
+          "title": "TypeScript code",
+          "text": "TypeScript code"
+        }
+      ]
+    },
+    {
+      "name": "Go",
+      "icon": "devicon-go-plain",
+      "items": [
+        {
+          "src": "/assets/snaps/snap.golang.png",
+          "alt": "Go code",
+          "title": "Go code",
+          "text": "Go code"
+        }
+      ]
+    },
+    {
+      "name": "Docker",
+      "icon": "devicon-docker-plain",
+      "items": [
+        {
+          "src": "/assets/snaps/snap.dockerfile.png",
+          "alt": "Dockerfile code",
+          "title": "Dockerfile code",
+          "text": "Dockerfile code"
+        }
+      ]
+    },
+    {
+      "name": "Terraform",
+      "icon": "devicon-terraform-plain",
+      "items": [
+        {
+          "src": "/assets/snaps/snap.terraform.png",
+          "alt": "Terraform code",
+          "title": "Terraform code",
+          "text": "Terraform code"
+        }
+      ]
+    }
+  ],
+  "plugins": [
+    {
+      "name": "Neogit",
+      "icon": "devicon-git-plain",
+      "items": [
+        {
+          "src": "/assets/screenshots/plugins/neogit/screenshot-neogit-status-dirty.webp",
+          "alt": "Neogit status with changes",
+          "title": "Neogit status with changes",
+          "text": "Neogit status with changes"
+        },
+        {
+          "src": "/assets/screenshots/plugins/neogit/screenshot-neogit-commit-popup.webp",
+          "alt": "Neogit commit popup",
+          "title": "Neogit commit popup",
+          "text": "Neogit commit popup"
+        },
+        {
+          "src": "/assets/screenshots/plugins/neogit/screenshot-neogit-commit-editmsg.webp",
+          "alt": "Neogit commit edit message",
+          "title": "Neogit commit edit message",
+          "text": "Neogit commit edit message"
+        },
+        {
+          "src": "/assets/screenshots/plugins/neogit/screenshot-neogit-push-popup.webp",
+          "alt": "Neogit push popup",
+          "title": "Neogit push popup",
+          "text": "Neogit push popup"
+        },
+        {
+          "src": "/assets/screenshots/plugins/neogit/screenshot-neogit-status-pushing-to-remote.webp",
+          "alt": "Neogit pushing to remote",
+          "title": "Neogit pushing to remote",
+          "text": "Neogit pushing to remote"
+        },
+        {
+          "src": "/assets/screenshots/plugins/neogit/screenshot-neogit-status-clean.webp",
+          "alt": "Neogit status clean",
+          "title": "Neogit status clean",
+          "text": "Neogit status clean"
+        }
+      ]
+    }
+  ]
+}
