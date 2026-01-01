@@ -198,7 +198,7 @@
 		</div>
 	</div>
 	<div
-		class="text-center mb-10 w-full mx-auto carousel carousel-center space-x-4 rounded-box max-w-7xl"
+		class="text-center mb-10 w-full mx-auto carousel carousel-center space-x-4 rounded-box max-w-4xl"
 		style="height: {containerHeight}px"
 	>
 		{#each screenshots as image, index (index)}
