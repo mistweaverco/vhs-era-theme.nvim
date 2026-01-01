@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { mdsvexShiki } from '@mistweaverco/mdsvex-shiki';
 	import HeadComponent from '$lib/HeadComponent.svelte';
 	import screenshotsDataJSON from './screenshots.json';
@@ -53,7 +54,7 @@
 		const idx = parseInt(target.getAttribute('data-idx') || '0');
 		const type = target.getAttribute('data-type');
 		activeIndex = 0;
-		target.blur();
+		if (target.blur) target.blur();
 		if (type === 'language') {
 			const data = screenshotData.languages[idx];
 			screenshots = data.items;
@@ -143,6 +144,8 @@
 		Manual
 	}
 
+	let shikiPreprocessor: Promise<(code: string, lang: string, info: string) => Promise<string>>;
+
 	const getInstallCode = async (method: InstallationMethod) => {
 		const shikiPreprocessor = await mdsvexShiki({});
 		let codeSnippet = '';
@@ -164,6 +167,72 @@
 	const onInstallationMethodChange = async (method: InstallationMethod) => {
 		installCode = await getInstallCode(method);
 	};
+
+	const onDeepLink = () => {
+		const hash = window.location.hash;
+		if (hash && hash.startsWith('#!/')) {
+			const deepLink = hash.replace('#!/', '');
+			if (deepLink.startsWith('screenshots')) {
+				const anchor = document.getElementById('screenshots');
+				window.scrollTo({
+					top: anchor?.offsetTop,
+					behavior: 'smooth'
+				});
+				const parts = deepLink.split('/');
+				if (parts.length !== 3) {
+					console.warn(`Invalid deep link format: "${deepLink}"`);
+				} else {
+					// parts[1] = type (language/plugin)
+					// parts[2] = name
+					if (parts.length < 3) {
+						console.warn(`Invalid deep link format: "${deepLink}"`);
+						return;
+					}
+					const type = parts[1];
+					const name = decodeURIComponent(parts.slice(2).join('/'));
+					let found = false;
+					if (type === 'language') {
+						screenshotData.languages.forEach((item, idx) => {
+							if (item.name.toLowerCase() === name.toLowerCase()) {
+								onScreenshotSelect({
+									target: {
+										getAttribute: (attr: string) => {
+											if (attr === 'data-idx') return idx.toString();
+											if (attr === 'data-type') return 'language';
+											return null;
+										}
+									}
+								} as unknown as Event);
+								found = true;
+							}
+						});
+					} else if (type === 'plugin') {
+						screenshotData.plugins.forEach((item, idx) => {
+							if (item.name.toLowerCase() === name.toLowerCase()) {
+								onScreenshotSelect({
+									target: {
+										getAttribute: (attr: string) => {
+											if (attr === 'data-idx') return idx.toString();
+											if (attr === 'data-type') return 'plugin';
+											return null;
+										}
+									}
+								} as unknown as Event);
+								found = true;
+							}
+						});
+					}
+				}
+			}
+		}
+	};
+
+	onMount(async () => {
+		window.addEventListener('navigate', onDeepLink);
+		onDeepLink();
+		// @ts-ignore
+		shikiPreprocessor = await mdsvexShiki({});
+	});
 </script>
 
 <HeadComponent
