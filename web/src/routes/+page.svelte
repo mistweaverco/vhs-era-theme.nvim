@@ -1,6 +1,6 @@
 <script lang="ts">
 	import HeadComponent from '$lib/HeadComponent.svelte';
-	import screenshotsData from './screenshots.json';
+	import screenshotsDataJSON from './screenshots.json';
 
 	interface Screenshot {
 		src: string;
@@ -9,8 +9,61 @@
 		text: string;
 	}
 
-	const screenshots: Screenshot[] = screenshotsData;
-	let currentScreenshotIndex = 0;
+	interface ScreenshotData {
+		languages: {
+			name: string;
+			icon?: string;
+			items: Screenshot[];
+		}[];
+		plugins: {
+			name: string;
+			icon?: string;
+			items: Screenshot[];
+		}[];
+	}
+
+	let activeIndex = 0;
+	let heights: number[] = [];
+	let slideEls: HTMLElement[] = [];
+	let containerHeight = 0;
+
+	function measure(index: number) {
+		const el = slideEls[index];
+		if (!el) return;
+		heights[index] = el.offsetHeight;
+		if (index === activeIndex) containerHeight = heights[index];
+	}
+
+	const screenshotData: ScreenshotData = screenshotsDataJSON as ScreenshotData;
+	let screenshots: Screenshot[] = [];
+
+	let screenshotSelectedLanguage: string | null = null;
+	let screenshotSelectedPlugin: string | null = null;
+	let screenshotSelectedLanguageIcon: string | null = null;
+	let screenshotSelectedPluginIcon: string | null = null;
+
+	const onScreenshotSelect = (evt: Event) => {
+		const target = evt.target as HTMLDivElement;
+		const idx = parseInt(target.getAttribute('data-idx') || '0');
+		const type = target.getAttribute('data-type');
+		activeIndex = 0;
+		target.blur();
+		if (type === 'language') {
+			const data = screenshotData.languages[idx];
+			screenshots = data.items;
+			screenshotSelectedLanguage = data.name;
+			screenshotSelectedLanguageIcon = data.icon || null;
+			screenshotSelectedPlugin = null;
+			screenshotSelectedPluginIcon = null;
+		} else if (type === 'plugin') {
+			const data = screenshotData.plugins[idx];
+			screenshots = data.items;
+			screenshotSelectedPlugin = data.name;
+			screenshotSelectedPluginIcon = data.icon || null;
+			screenshotSelectedLanguage = null;
+			screenshotSelectedLanguageIcon = null;
+		}
+	};
 
 	const handleAnchorClick = (evt: Event) => {
 		evt.preventDefault();
@@ -27,7 +80,7 @@
 		evt.preventDefault();
 		const link = evt.currentTarget as HTMLAnchorElement;
 		const anchorId = new URL(link.href).hash.replace('#', '');
-		currentScreenshotIndex = parseInt(link.getAttribute('data-idx') || '0');
+		activeIndex = parseInt(link.getAttribute('data-idx') || '0');
 		if (!anchorId) return;
 		// if starts with slide, prevent horizontal jump
 		if (anchorId.startsWith('slide')) {
@@ -37,6 +90,11 @@
 			window.scrollTo({ top: currentScroll });
 		}
 	};
+
+	$: containerHeight = heights[activeIndex] ?? containerHeight;
+	$: screenshots;
+	$: screenshotSelectedLanguage;
+	$: screenshotSelectedPlugin;
 </script>
 
 <HeadComponent
@@ -61,15 +119,63 @@
 		<h1 class="text-5xl font-bold">Screenshots 📸</h1>
 		<p class="pt-6">Some screenshots</p>
 	</div>
-	<div class="text-center mb-10 w-full max-w-4xl mx-auto carousel carousel-center space-x-4 rounded-box">
+	<div class="text-center mb-10">
+		<div class="dropdown">
+			<div tabindex="0" role="button" class="btn m-1 w-full justify-between">
+				{#if screenshotSelectedLanguageIcon}
+					<i class={screenshotSelectedLanguageIcon}></i>
+				{/if}
+				{screenshotSelectedLanguage ? screenshotSelectedLanguage : 'Languages'}
+			</div>
+			<ul class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+				{#each screenshotData.languages as item, idx (idx)}
+					<li>
+						<button onclick={onScreenshotSelect} data-type="language" data-idx={idx} class="flex items-center gap-2">
+							{#if item.icon}
+								<i class={item.icon}></i>
+							{/if}
+							{item.name}
+						</button>
+					</li>
+				{/each}
+			</ul>
+		</div>
+		<div class="dropdown">
+			<div tabindex="0" role="button" class="btn m-1 w-full justify-between">
+				{#if screenshotSelectedPluginIcon}
+					<i class={screenshotSelectedPluginIcon}></i>
+				{/if}
+				{screenshotSelectedPlugin ? screenshotSelectedPlugin : 'Plugins'}
+			</div>
+			<ul class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+				{#each screenshotData.plugins as item, idx (idx)}
+					<li>
+						<button onclick={onScreenshotSelect} data-type="plugin" data-idx={idx} class="flex items-center gap-2">
+							{#if item.icon}
+								<i class={item.icon}></i>
+							{/if}
+							{item.name}
+						</button>
+					</li>
+				{/each}
+			</ul>
+		</div>
+	</div>
+	<div
+		class="text-center mb-10 w-full max-w-4xl mx-auto carousel carousel-center space-x-4 rounded-box"
+		style="height: {containerHeight}px"
+	>
 		{#each screenshots as image, index (index)}
-			<div
-				id={'slide' + (index + 1)}
-				class="carousel-item relative w-full {currentScreenshotIndex === index ? '' : 'hidden'}"
-			>
-				<div class="card bg-base-100 shadow-xl">
+			<div id={'slide' + (index + 1)} class="carousel-item relative">
+				<div bind:this={slideEls[index]} class="card bg-base-100 shadow-xl mx-auto w-full max-w-3xl">
 					<figure>
-						<img src={image.src} alt={image.alt} class="w-full object-contain" />
+						<img
+							onload={() => measure(index)}
+							loading="lazy"
+							src={image.src}
+							alt={image.alt}
+							class="image {index === activeIndex ? 'active' : ''}"
+						/>
 					</figure>
 					<div class="card-body">
 						<h2 class="card-title justify-center">{image.title}</h2>
@@ -112,3 +218,32 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	.carousel {
+		overflow: hidden;
+	}
+	.carousel-item {
+		position: relative;
+		flex: 0 0 auto;
+		display: block;
+		width: 100%;
+		transition: height 300ms ease;
+	}
+
+	.image {
+		width: 100%;
+		height: auto;
+
+		opacity: 0;
+		pointer-events: none;
+		transition:
+			opacity 300ms ease,
+			transform 300ms ease;
+	}
+
+	.image.active {
+		opacity: 1;
+		pointer-events: auto;
+	}
+</style>
