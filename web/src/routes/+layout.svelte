@@ -1,8 +1,12 @@
 <script lang="ts">
+	import { copyAction } from '@mistweaverco/mdsvex-shiki';
+	import '@fortawesome/fontawesome-free/css/all.min.css';
+	import '@mistweaverco/mdsvex-shiki/styles.css';
 	import '../app.css';
 	import '../devicon.min.css';
-	import '@fortawesome/fontawesome-free/css/all.min.css';
 	let { children } = $props();
 </script>
 
-{@render children()}
+<div use:copyAction>
+	{@render children()}
+</div>

@@ -1,6 +1,10 @@
 <script lang="ts">
+	import { mdsvexShiki } from '@mistweaverco/mdsvex-shiki';
 	import HeadComponent from '$lib/HeadComponent.svelte';
 	import screenshotsDataJSON from './screenshots.json';
+	import installCodeLazy from './install-code-lazy.lua?raw';
+	import installCodePacker from './install-code-packer.lua?raw';
+	import installCodeVimPlug from './install-code-vimplug.lua?raw';
 
 	interface Screenshot {
 		src: string;
@@ -27,6 +31,7 @@
 	let slideEls: HTMLElement[] = [];
 	let screenshotImgEls: HTMLImageElement[] = [];
 	let containerHeight = 0;
+	let installCode: string = '';
 
 	function measure(index: number) {
 		const el = slideEls[index];
@@ -130,6 +135,35 @@
 			}
 		};
 	};
+
+	enum InstallationMethod {
+		Lazy,
+		Packer,
+		VimPlug,
+		Manual
+	}
+
+	const getInstallCode = async (method: InstallationMethod) => {
+		const shikiPreprocessor = await mdsvexShiki({});
+		let codeSnippet = '';
+		switch (method) {
+			case InstallationMethod.Lazy:
+				codeSnippet = installCodeLazy;
+				break;
+			case InstallationMethod.Packer:
+				codeSnippet = installCodePacker;
+				break;
+			case InstallationMethod.VimPlug:
+				codeSnippet = installCodeVimPlug;
+				break;
+		}
+		codeSnippet += '\n-- Then set the colorscheme\nvim.cmd("colorscheme vhs-era-theme")';
+		return await shikiPreprocessor(codeSnippet, 'lua', 'path=nvim/init.lua');
+	};
+
+	const onInstallationMethodChange = async (method: InstallationMethod) => {
+		installCode = await getInstallCode(method);
+	};
 </script>
 
 <HeadComponent
@@ -200,7 +234,9 @@
 		<div class="dropdown">
 			<button
 				tabindex="0"
-				class="btn m-1 w-full justify-between {screenshotSelectedLanguage ? 'btn-outline btn-secondary' : ''}"
+				class="btn m-1 w-full justify-between {screenshotSelectedLanguage
+					? 'btn-outline btn-secondary'
+					: 'btn-outline btn-accent'}"
 			>
 				{#if screenshotSelectedLanguageIcon}
 					<i
@@ -225,7 +261,9 @@
 		<div class="dropdown">
 			<button
 				tabindex="0"
-				class="btn m-1 w-full justify-between {screenshotSelectedPlugin ? 'btn-outline btn-secondary' : ''}"
+				class="btn m-1 w-full justify-between {screenshotSelectedPlugin
+					? 'btn-outline btn-secondary'
+					: 'btn-outline btn-accent'}"
 			>
 				{#if screenshotSelectedPluginIcon}
 					<i
@@ -307,17 +345,41 @@
 	</div>
 	<div class="text-center">
 		<p>
-			<a href="#get-involved" onclick={handleAnchorClick}
-				><button class="btn btn-secondary mt-5">Get involved</button></a
-			>
+			<a href="#install" onclick={handleAnchorClick}><button class="btn btn-secondary mt-5">Installation</button></a>
 		</p>
+	</div>
+</div>
+
+<div id="install" class="hero bg-base-200 min-h-screen">
+	<div class="hero-content text-center">
+		<div class="max-w-xl">
+			<h1 class="text-5xl font-bold">Installation 🚀</h1>
+			<p class="pt-6 mb-6">How to install the theme</p>
+			<select
+				class="select select-bordered w-full max-w-xs mb-6"
+				onchange={(e) => onInstallationMethodChange(e.target.selectedIndex)}
+			>
+				<option disabled selected>Select</option>
+				<option>Lazy.nvim</option>
+				<option>Packer.nvim</option>
+				<option>Vim-Plug</option>
+			</select>
+			<div class="w-full p-6 m-6 relative text-left">
+				{@html installCode}
+			</div>
+			<p>
+				<a href="#get-involved" onclick={handleAnchorClick}
+					><button class="btn btn-secondary mt-5">Get involved</button></a
+				>
+			</p>
+		</div>
 	</div>
 </div>
 <div id="get-involved" class="hero bg-base-200 min-h-screen">
 	<div class="hero-content text-center">
 		<div class="max-w-md">
 			<h1 class="text-5xl font-bold">Get involved ❤️</h1>
-			<p class="py-6">vhs-era-theme.nvim is open-source and we welcome contributions.</p>
+			<p class="py-6">The colorscheme is open-source and we welcome contributions.</p>
 			<p>
 				View the <a class="text-secondary" href="https://github.com/mistweaverco/vhs-era-theme.nvim">code.</a>
 			</p>
