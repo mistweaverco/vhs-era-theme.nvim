@@ -37,6 +37,18 @@
       ]
     },
     {
+      "name": "Python",
+      "icon": "devicon-python-plain",
+      "items": [
+        {
+          "src": "/assets/snaps/languages/python/snap.python.png",
+          "alt": "Python code",
+          "title": "Python code",
+          "text": "Python code"
+        }
+      ]
+    },
+    {
       "name": "Docker",
       "icon": "devicon-docker-plain",
       "items": [

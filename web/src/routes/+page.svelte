@@ -135,17 +135,58 @@
 <HeadComponent
 	data={{
 		title: 'vhs-era-theme.nvim',
-		description: 'A retro VHS era theme for Neovim, inspired by the aesthetics of the 80s and 90s.'
+		description:
+			'VHS Era is a nostalgic colorscheme for Neovim that brings back the vibrant and distinct aesthetics of the VHS era.'
 	}}
 />
+
+<div class="z-50 fixed right-5 top-5 tooltip tooltip-left" data-tip="Open GitHub repository">
+	<a
+		href="https://github.com/mistweaverco/vhs-era-theme.nvim"
+		class="btn btn-circle btn-xl btn-ghost"
+		aria-label="Open GitHub repository"
+	>
+		<i class="devicon-github-original"></i>
+	</a>
+</div>
 
 <div id="start" class="hero bg-base-200 min-h-screen">
 	<div class="hero-content text-center">
 		<div class="max-w-md">
 			<img src="/logo.svg" alt="vhs-era-theme logo" class="m-5 mx-auto w-64" />
-			<h1 class="text-5xl font-bold">VHS Era Theme for Neovim</h1>
-			<p class="py-6">A retro VHS era theme for Neovim, inspired by the aesthetics of the 80s and 90s.</p>
-			<a href="#screenshots" onclick={handleAnchorClick}><button class="btn btn-primary">Screenshots</button></a>
+			<h1 class="text-5xl font-bold">VHS Era</h1>
+			<div class="collapse bg-base-100 border border-base-300 mt-6 mb-6">
+				<input type="checkbox" name="intro-theme-roots" />
+				<div
+					class="collapse-title font-semibold text-lg bg-secondary text-secondary-content text-center"
+					style="padding-inline-end: unset;"
+				>
+					A retro colorscheme for Neovim.
+					<div class="text-center">
+						<i class="fa-solid fa-caret-down"></i>
+					</div>
+				</div>
+				<div class="collapse-content text-center border-1 border-secondary rounded-b-lg">
+					<p class="mt-6 mb-2 text-2xl text-secondary">Theme Roots</p>
+					<p class="text-secondary text-l mt-6 mb-6">
+						When it started it used the base-colors from the popular <a
+							class="link"
+							href="https://github.com/nyoom-engineering/oxocarbon.nvim"
+							>Oxocarbon
+							<span class="fa-solid fa-external-link-alt"></span>
+						</a> theme, but has since evolved into its own unique style.
+					</p>
+					<p class="text-secondary text-l mt-6 mb-6">
+						Just check out some of the <a class="link" href="#screenshots" onclick={handleAnchorClick}>screenshots</a> to
+						see how far it's come!
+					</p>
+				</div>
+			</div>
+			<p class="mb-6 text-lg text-secondary text-center border-1 rounded-lg border-secondary p-4">
+				VHS Era is a nostalgic colorscheme for Neovim that brings back the vibrant and distinct aesthetics of the VHS
+				era.
+			</p>
+			<a href="#screenshots" onclick={handleAnchorClick}><button class="btn btn-secondary">Screenshots</button></a>
 		</div>
 	</div>
 </div>
@@ -157,12 +198,17 @@
 	</div>
 	<div class="text-center mb-10">
 		<div class="dropdown">
-			<div tabindex="0" role="button" class="btn m-1 w-full justify-between">
+			<button
+				tabindex="0"
+				class="btn m-1 w-full justify-between {screenshotSelectedLanguage ? 'btn-outline btn-secondary' : ''}"
+			>
 				{#if screenshotSelectedLanguageIcon}
-					<i class={screenshotSelectedLanguageIcon}></i>
+					<i
+						class="border-2 border-secondary rounded-full p-1 bg-secondary text-base-content {screenshotSelectedLanguageIcon}"
+					></i>
 				{/if}
 				{screenshotSelectedLanguage ? screenshotSelectedLanguage : 'Languages'}
-			</div>
+			</button>
 			<ul class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
 				{#each screenshotData.languages as item, idx (idx)}
 					<li>
@@ -177,12 +223,17 @@
 			</ul>
 		</div>
 		<div class="dropdown">
-			<div tabindex="0" role="button" class="btn m-1 w-full justify-between">
+			<button
+				tabindex="0"
+				class="btn m-1 w-full justify-between {screenshotSelectedPlugin ? 'btn-outline btn-secondary' : ''}"
+			>
 				{#if screenshotSelectedPluginIcon}
-					<i class={screenshotSelectedPluginIcon}></i>
+					<i
+						class="border-2 border-secondary rounded-full p-1 bg-secondary text-base-content {screenshotSelectedPluginIcon}"
+					></i>
 				{/if}
 				{screenshotSelectedPlugin ? screenshotSelectedPlugin : 'Plugins'}
-			</div>
+			</button>
 			<ul class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
 				{#each screenshotData.plugins as item, idx (idx)}
 					<li>
@@ -218,15 +269,33 @@
 						<h2 class="card-title justify-center">{image.title}</h2>
 						<p>{image.text}</p>
 					</div>
+					<div class="absolute right-5 top-5 tooltip tooltip-left" data-tip="Open image in new tab">
+						<a
+							href={image.src}
+							target="_blank"
+							class="btn btn-soft btn-circle btn-secondary"
+							aria-label="Open image in new tab"
+						>
+							<i class="fa-solid fa-expand"></i>
+						</a>
+					</div>
 					<div class="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
 						{#if index !== 0}
-							<a onclick={preventGalleryJump} href={'#slide' + index} data-idx={index - 1} class="btn btn-circle">❮</a>
+							<a
+								onclick={preventGalleryJump}
+								href={'#slide' + index}
+								data-idx={index - 1}
+								class="btn btn-circle btn-soft btn-secondary">❮</a
+							>
 						{:else}
 							<div></div>
 						{/if}
 						{#if index !== screenshots.length - 1}
-							<a onclick={preventGalleryJump} href={'#slide' + (index + 2)} data-idx={index + 1} class="btn btn-circle"
-								>❯</a
+							<a
+								onclick={preventGalleryJump}
+								href={'#slide' + (index + 2)}
+								data-idx={index + 1}
+								class="btn btn-circle btn-soft btn-secondary">❯</a
 							>
 						{:else}
 							<div></div>
