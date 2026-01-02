@@ -364,6 +364,12 @@
 				{/each}
 			</ul>
 		</div>
+		{#if screenshots.length === 0}
+			<div role="alert" class="alert alert-warning max-w-md mx-auto mt-6 flex justify-center">
+				<i class="fa-solid fa-triangle-exclamation"></i>
+				<span>Please select a language or plugin to view screenshots.</span>
+			</div>
+		{/if}
 	</div>
 	<div
 		class="text-center mb-10 w-full mx-auto carousel carousel-center space-x-4 rounded-box max-w-4xl"
