@@ -1,58 +1,60 @@
 <script lang="ts">
-	import { onMount, tick } from 'svelte';
+	import { page } from '$app/state';
+	import { browser } from '$app/environment';
 	import { pushState } from '$app/navigation';
 	import HeadComponent from '$lib/HeadComponent.svelte';
 	import { InstallationMethod } from '$lib/enums';
-	import type { Screenshot } from '$lib/types.js';
+	import type { ScreenshotMarkdownData } from '$lib/screenshots';
 
 	const { data } = $props();
+	const params = $derived(browser ? Object.fromEntries(page.url.searchParams) : {});
+	const screenshots: ScreenshotMarkdownData[] = $derived.by(() => {
+		if (page.url.hash !== '#screenshots') return [];
+		const { category, name } = params;
+		if (!name || !category) return [];
+		const source =
+			category === 'language'
+				? data.languagesCategoryData.find((item) => item.name.toLowerCase() === name.toLowerCase()) || {
+						screenshots: []
+					}
+				: data.pluginsCategoryData.find((item) => item.name.toLowerCase() === name.toLowerCase()) || {
+						screenshots: []
+					};
+		return source.screenshots || [];
+	});
 
 	let activeIndex = $state(0);
 	let heights: number[] = $state([]);
 	let slideEls: HTMLElement[] = $state([]);
 	let screenshotImgEls: HTMLImageElement[] = $state([]);
 	let containerHeight = $state(0);
-	let installCode: string = $state('');
-	let screenshots: Screenshot[] = $state([]);
-	let screenshotSelectedCategory: string | null = $state(null);
-	let screenshotSelectedLanguage: string | null = $state(null);
-	let screenshotSelectedPlugin: string | null = $state(null);
-	let screenshotSelectedLanguageIcon: string | null = $state(null);
-	let screenshotSelectedPluginIcon: string | null = $state(null);
 
-	function measure(index: number) {
+	const onParamsChange = async () => {
+		if (page.url.hash === '#screenshots') {
+			if (params.slide) {
+				const anchor = document.getElementById('slide' + params.slide);
+				anchor?.scrollIntoView({
+					behavior: 'smooth',
+					block: 'nearest',
+					inline: 'center'
+				});
+			}
+			return;
+		}
+	};
+
+	$effect(() => {
+		onParamsChange();
+	});
+
+	function measureContainerHeight(index: number) {
 		const el = slideEls[index];
 		if (!el) return;
 		heights[index] = el.offsetHeight;
 		if (index === activeIndex) containerHeight = heights[index];
 	}
 
-	const onScreenshotSelect = (evt: Event) => {
-		activeIndex = 0;
-		const target = evt.target as HTMLDivElement;
-		const idx = parseInt(target.getAttribute('data-idx') || '0');
-		const type = target.getAttribute('data-type');
-		screenshotSelectedCategory = type;
-		// TODO: refactor to pass data directly instead of faking events
-		// also blur dropdowns after selection
-		if (type === 'language') {
-			const d = data.screenshotsData.languages[idx];
-			screenshots = d.items;
-			screenshotSelectedLanguage = d.name;
-			screenshotSelectedLanguageIcon = d.icon || null;
-			screenshotSelectedPlugin = null;
-			screenshotSelectedPluginIcon = null;
-		} else if (type === 'plugin') {
-			const d = data.screenshotsData.plugins[idx];
-			screenshots = d.items;
-			screenshotSelectedPlugin = d.name;
-			screenshotSelectedPluginIcon = d.icon || null;
-			screenshotSelectedLanguage = null;
-			screenshotSelectedLanguageIcon = null;
-		}
-	};
-
-	const handleAnchorClick = (evt: Event) => {
+	const handleSectionAnchorClick = (evt: Event) => {
 		evt.preventDefault();
 		const link = evt.currentTarget as HTMLAnchorElement;
 		const url = new URL(link.href);
@@ -66,40 +68,7 @@
 		pushState(url.pathname + hash, '');
 	};
 
-	const preventGalleryJump = (evt: Event) => {
-		evt.preventDefault();
-		const link = evt.currentTarget as HTMLAnchorElement;
-		const url = new URL(link.href);
-		const hash = url.hash;
-		const anchorId = hash.replace('#', '');
-		activeIndex = parseInt(link.getAttribute('data-idx') || '0', 10);
-		const slideIdx = activeIndex + 1;
-		const currentScroll = window.scrollY;
-		const anchor = document.getElementById(anchorId);
-		anchor?.scrollIntoView({ behavior: 'smooth' });
-		window.scrollTo({ top: currentScroll });
-		const newUrl =
-			url.pathname +
-			'#!/' +
-			(screenshotSelectedLanguage
-				? `screenshots/language/${encodeURIComponent(screenshotSelectedLanguage.toLowerCase())}/${slideIdx}`
-				: screenshotSelectedPlugin
-					? `screenshots/plugin/${encodeURIComponent(screenshotSelectedPlugin.toLowerCase())}/${slideIdx}`
-					: '');
-		if (newUrl === window.location.pathname + window.location.hash) return;
-		pushState(
-			url.pathname +
-				'#!/' +
-				(screenshotSelectedLanguage
-					? `screenshots/language/${encodeURIComponent(screenshotSelectedLanguage.toLowerCase())}/${slideIdx}`
-					: screenshotSelectedPlugin
-						? `screenshots/plugin/${encodeURIComponent(screenshotSelectedPlugin.toLowerCase())}/${slideIdx}`
-						: ''),
-			''
-		);
-	};
-
-	const lazyload = (node: HTMLImageElement) => {
+	const lazyloadScreenshots = (node: HTMLImageElement) => {
 		const mutationObserver = new MutationObserver((mutations) => {
 			mutations.forEach((mutation) => {
 				if (mutation.type === 'attributes' && mutation.attributeName === 'data-src') {
@@ -134,105 +103,8 @@
 
 	const onInstallationMethodChange = async (evt: Event) => {
 		const target = evt.target as HTMLSelectElement;
-		const method = target.selectedIndex;
-		switch (method) {
-			case InstallationMethod.Lazy:
-				installCode = data.lazyInstallCode;
-				break;
-			case InstallationMethod.Packer:
-				installCode = data.packerInstallCode;
-				break;
-			case InstallationMethod.VimPlug:
-				installCode = data.vimPlugInstallCode;
-				break;
-			default:
-				installCode = data.lazyInstallCode;
-		}
+		target.closest('form')?.submit();
 	};
-
-	const onDeepLink = async () => {
-		const hash = window.location.hash;
-		if (hash && hash.startsWith('#!/')) {
-			const deepLink = hash.replace('#!/', '');
-			if (deepLink.startsWith('screenshots')) {
-				const anchor = document.getElementById('screenshots');
-				window.scrollTo({
-					top: anchor?.offsetTop
-				});
-				const parts = deepLink.split('/');
-				if (parts.length < 3) {
-					return;
-				}
-				const type = parts[1];
-				const name = decodeURIComponent(parts[2]);
-				const slideIdx = parts.length === 4 ? parts[3] : null;
-				const slideIdxNum = slideIdx ? parseInt(slideIdx, 10) : 1;
-				if (type === 'language') {
-					for (const [idx, item] of data.screenshotsData.languages.entries()) {
-						if (item.name.toLowerCase() === name.toLowerCase()) {
-							onScreenshotSelect({
-								target: {
-									getAttribute: (attr: string) => {
-										if (attr === 'data-idx') return idx.toString();
-										if (attr === 'data-type') return 'language';
-										return null;
-									}
-								}
-							} as unknown as Event);
-							if (slideIdxNum !== null) {
-								await tick();
-								preventGalleryJump({
-									preventDefault: () => {},
-									currentTarget: {
-										href: new URL(`#slide${slideIdx}`, window.location.href).toString(),
-										getAttribute: (attr: string) => {
-											if (attr === 'data-idx') return slideIdxNum - 1;
-											return null;
-										}
-									}
-								} as unknown as Event);
-							}
-							break;
-						}
-					}
-				} else if (type === 'plugin') {
-					for (const [idx, item] of data.screenshotsData.plugins.entries()) {
-						if (item.name.toLowerCase() === name.toLowerCase()) {
-							onScreenshotSelect({
-								target: {
-									getAttribute: (attr: string) => {
-										if (attr === 'data-idx') return idx.toString();
-										if (attr === 'data-type') return 'plugin';
-										return null;
-									}
-								}
-							} as unknown as Event);
-							if (slideIdxNum !== null) {
-								await tick();
-								preventGalleryJump({
-									preventDefault: () => {},
-									currentTarget: {
-										href: new URL(`#slide${slideIdx}`, window.location.href).toString(),
-										getAttribute: (attr: string) => {
-											if (attr === 'data-idx') return slideIdxNum - 1;
-											return null;
-										}
-									}
-								} as unknown as Event);
-							}
-							break;
-						}
-					}
-				}
-			}
-		}
-	};
-
-	onMount(async () => {
-		await tick();
-		window.addEventListener('hashchange', onDeepLink);
-		onDeepLink();
-	});
 </script>
 
 <HeadComponent
@@ -280,8 +152,9 @@
 						</a> theme, but has since evolved into its own unique style.
 					</p>
 					<p class="text-secondary text-l mt-6 mb-6">
-						Just check out some of the <a class="link" href="#screenshots" onclick={handleAnchorClick}>screenshots</a> to
-						see how far it's come!
+						Just check out some of the <a class="link" href="#screenshots" onclick={handleSectionAnchorClick}
+							>screenshots</a
+						> to see how far it's come!
 					</p>
 				</div>
 			</div>
@@ -289,7 +162,9 @@
 				VHS Era is a nostalgic colorscheme for Neovim that brings back the vibrant and distinct aesthetics of the VHS
 				era.
 			</p>
-			<a href="#screenshots" onclick={handleAnchorClick}><button class="btn btn-secondary">Screenshots</button></a>
+			<a href="#screenshots" onclick={handleSectionAnchorClick}
+				><button class="btn btn-secondary">Screenshots</button></a
+			>
 		</div>
 	</div>
 </div>
@@ -303,26 +178,23 @@
 		<div class="dropdown">
 			<button
 				tabindex="0"
-				class="btn m-1 w-full justify-between {screenshotSelectedLanguage
+				class="btn m-1 w-full justify-between {params.category === 'language'
 					? 'btn-outline btn-secondary'
 					: 'btn-outline btn-accent'}"
 			>
-				{#if screenshotSelectedLanguageIcon}
+				{#if params.category === 'language' && params.name}
 					<i
-						class="border-2 border-secondary rounded-full p-1 bg-secondary text-base-content {screenshotSelectedLanguageIcon}"
+						class="border-2 border-secondary rounded-full p-1 bg-secondary text-base-content {data.languagesCategoryData.find(
+							(item) => item.name === params.name
+						)?.icon || ''}"
 					></i>
 				{/if}
-				{screenshotSelectedLanguage ? screenshotSelectedLanguage : 'Languages'}
+				{params.category === 'language' && params.name ? params.name : 'Languages'}
 			</button>
 			<ul class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-				{#each data.screenshotsData.languages as item, idx (idx)}
+				{#each data.languagesCategoryData as item, idx (idx)}
 					<li>
-						<a
-							href="#!/screenshots/language/{item.name.toLowerCase()}/1"
-							data-type="language"
-							data-idx={idx}
-							class="flex items-center gap-2"
-						>
+						<a href="?category=language&name={item.name}&slide=1#screenshots" class="flex items-center gap-2">
 							{#if item.icon}
 								<i class={item.icon}></i>
 							{/if}
@@ -335,26 +207,23 @@
 		<div class="dropdown">
 			<button
 				tabindex="0"
-				class="btn m-1 w-full justify-between {screenshotSelectedPlugin
+				class="btn m-1 w-full justify-between {params.category === 'plugin'
 					? 'btn-outline btn-secondary'
 					: 'btn-outline btn-accent'}"
 			>
-				{#if screenshotSelectedPluginIcon}
+				{#if params.category === 'plugin' && params.name}
 					<i
-						class="border-2 border-secondary rounded-full p-1 bg-secondary text-base-content {screenshotSelectedPluginIcon}"
+						class="border-2 border-secondary rounded-full p-1 bg-secondary text-base-content {data.pluginsCategoryData.find(
+							(item) => item.name === params.name
+						)?.icon || ''}"
 					></i>
 				{/if}
-				{screenshotSelectedPlugin ? screenshotSelectedPlugin : 'Plugins'}
+				{params.category === 'plugin' && params.name ? params.name : 'Plugins'}
 			</button>
 			<ul class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-				{#each data.screenshotsData.plugins as item, idx (idx)}
+				{#each data.pluginsCategoryData as item, idx (idx)}
 					<li>
-						<a
-							href="#!/screenshots/plugin/{item.name.toLowerCase()}/1"
-							data-type="plugin"
-							data-idx={idx}
-							class="flex items-center gap-2"
-						>
+						<a href="?category=plugin&name={item.name}&slide=1#screenshots" class="flex items-center gap-2">
 							{#if item.icon}
 								<i class={item.icon}></i>
 							{/if}
@@ -381,20 +250,32 @@
 					<figure>
 						<img
 							bind:this={screenshotImgEls[index]}
-							onload={() => measure(index)}
-							use:lazyload
-							data-src={image.src}
-							alt={image.alt}
+							onload={() => measureContainerHeight(index)}
+							use:lazyloadScreenshots
+							data-src="/assets/screenshots/{params.category}s/{params.name.toLowerCase()}/{image.metadata.url}"
+							alt={image.metadata.title}
 							class="image"
 						/>
 					</figure>
 					<div class="card-body">
-						<h2 class="card-title justify-center">{image.title}</h2>
-						<p>{image.text}</p>
+						<h2 class="card-title justify-center">
+							<a
+								href={params.category === 'language'
+									? data.languagesCategoryData.find((item) => item.name.toLowerCase() === params.name.toLowerCase())
+											?.url
+									: data.pluginsCategoryData.find((item) => item.name.toLowerCase() === params.name.toLowerCase())?.url}
+								target="_blank"
+								class="btn btn-ghost btn-xl"
+							>
+								{params.name}
+								<span class="fa-solid fa-external-link-alt"></span>
+							</a>
+						</h2>
+						{@html image.content}
 					</div>
 					<div class="absolute right-5 top-5 tooltip tooltip-left" data-tip="Open image in new tab">
 						<a
-							href={image.src}
+							href="/assets/screenshots/{params.category}s/{params.name.toLowerCase()}/{image.metadata.url}"
 							target="_blank"
 							class="btn btn-soft btn-circle btn-secondary"
 							aria-label="Open image in new tab"
@@ -405,13 +286,7 @@
 					<div class="absolute left-5 right-5 top-1/2 flex -translate-y-1/2 transform justify-between">
 						{#if index !== 0}
 							<a
-								href={'#!/screenshots/' +
-									screenshotSelectedCategory +
-									'/' +
-									screenshotSelectedPlugin?.toLocaleLowerCase() +
-									'/' +
-									index}
-								data-idx={index - 1}
+								href={'?category=' + params.category + '&name=' + params.name + '&slide=' + index + '#screenshots'}
 								class="btn btn-circle btn-soft btn-secondary">❮</a
 							>
 						{:else}
@@ -419,13 +294,14 @@
 						{/if}
 						{#if index !== screenshots.length - 1}
 							<a
-								href={'#!/screenshots/' +
-									screenshotSelectedCategory +
-									'/' +
-									screenshotSelectedPlugin?.toLocaleLowerCase() +
-									'/' +
-									(index + 2)}
-								data-idx={index + 1}
+								href={'?category=' +
+									params.category +
+									'&' +
+									'name=' +
+									params.name +
+									'&slide=' +
+									(index + 2) +
+									'#screenshots'}
 								class="btn btn-circle btn-soft btn-secondary">❯</a
 							>
 						{:else}
@@ -438,7 +314,7 @@
 	</div>
 	<div class="text-center">
 		<p>
-			<a href="#installation" onclick={handleAnchorClick}
+			<a href="#installation" onclick={handleSectionAnchorClick}
 				><button class="btn btn-secondary mt-5">Installation</button></a
 			>
 		</p>
@@ -451,21 +327,34 @@
 		<p class="pt-6">How to install the theme</p>
 	</div>
 	<div class="text-center mb-10">
-		<select class="select select-bordered mb-6" onchange={onInstallationMethodChange}>
-			<option disabled selected>Select</option>
-			<option>Lazy.nvim</option>
-			<option>Packer.nvim</option>
-			<option>Vim-Plug</option>
-		</select>
+		<form method="GET" action="#installation">
+			<select name="pluginManager" class="select select-bordered mb-6" onchange={onInstallationMethodChange}>
+				<option disabled selected={params.pluginManager ? null : true}>Select</option>
+				<option
+					selected={params.pluginManager === InstallationMethod.Lazy ? true : null}
+					value={InstallationMethod.Lazy}>Lazy.nvim</option
+				>
+				<option
+					selected={params.pluginManager === InstallationMethod.Packer ? true : null}
+					value={InstallationMethod.Packer}>Packer.nvim</option
+				>
+				<option
+					selected={params.pluginManager === InstallationMethod.VimPlug ? true : null}
+					value={InstallationMethod.VimPlug}>Vim-Plug</option
+				>
+			</select>
+		</form>
 	</div>
-	<div class="text-center mb-10 w-full mx-auto carousel carousel-center space-x-4 rounded-box max-w-4xl">
-		<div class="m-auto text-left">
-			{@html installCode}
+	{#if params.pluginManager}
+		<div class="text-center mb-10 w-full mx-auto carousel carousel-center space-x-4 rounded-box max-w-4xl">
+			<div class="m-auto text-left">
+				{@html data.installationCode[params.pluginManager as InstallationMethod]}
+			</div>
 		</div>
-	</div>
+	{/if}
 	<div class="text-center mb-10">
 		<p>
-			<a href="#get-involved" onclick={handleAnchorClick}
+			<a href="#get-involved" onclick={handleSectionAnchorClick}
 				><button class="btn btn-secondary mt-5">Get involved</button></a
 			>
 		</p>

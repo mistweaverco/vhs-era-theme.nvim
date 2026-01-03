@@ -1,7 +1,7 @@
 import { mdsvexShiki } from '@mistweaverco/mdsvex-shiki';
-import type { ScreenshotData, Shiki } from '$lib/types';
+import type { Shiki } from '$lib/types';
 import { InstallationMethod } from '$lib/enums';
-import screenshotsDataJSON from './screenshots.json';
+import { CategoryName, getCategoryData } from '$lib/screenshots';
 import installCodeLazy from './install-code-lazy.lua?raw';
 import installCodePacker from './install-code-packer.lua?raw';
 import installCodeVimPlug from './install-code-vimplug.lua?raw';
@@ -26,10 +26,16 @@ const getInstallCode = async (shiki: Shiki, method: InstallationMethod) => {
 export const load = async () => {
   const shiki = await mdsvexShiki({});
 
+  const languagesCategoryData = await getCategoryData(CategoryName.LANGUAGES);
+  const pluginsCategoryData = await getCategoryData(CategoryName.PLUGINS);
+
   return {
-    screenshotsData: screenshotsDataJSON as ScreenshotData,
-    lazyInstallCode: await getInstallCode(shiki, InstallationMethod.Lazy),
-    packerInstallCode: await getInstallCode(shiki, InstallationMethod.Packer),
-    vimPlugInstallCode: await getInstallCode(shiki, InstallationMethod.VimPlug)
+    languagesCategoryData,
+    pluginsCategoryData,
+    installationCode: {
+      [InstallationMethod.Lazy]: await getInstallCode(shiki, InstallationMethod.Lazy),
+      [InstallationMethod.Packer]: await getInstallCode(shiki, InstallationMethod.Packer),
+      [InstallationMethod.VimPlug]: await getInstallCode(shiki, InstallationMethod.VimPlug)
+    }
   };
 };
