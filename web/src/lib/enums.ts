@@ -1,6 +1,5 @@
 export enum InstallationMethod {
-  Lazy,
-  Packer,
-  VimPlug,
-  Manual
+  Lazy = 'Lazy.nvim',
+  Packer = 'Packer.nvim',
+  VimPlug = 'Vim-Plug'
 }

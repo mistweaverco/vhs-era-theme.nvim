@@ -2,6 +2,8 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';
 import type { Config } from '@sveltejs/kit';
 import adapter from '@sveltejs/adapter-static';
+import { mdsvex } from 'mdsvex';
+import type { PreprocessorGroup } from 'svelte/compiler';
 
 const config: Config = {
   kit: {
@@ -12,12 +14,15 @@ const config: Config = {
       precompress: true
     })
   },
-  extensions: ['.svelte'],
+  extensions: ['.svelte', '.md'],
   plugins: [tailwindcss()],
   preprocess: [
     vitePreprocess({
       script: true
-    })
+    }),
+    mdsvex({
+      extension: '.md'
+    }) as PreprocessorGroup
   ]
 };
 
