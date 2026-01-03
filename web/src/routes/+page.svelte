@@ -169,7 +169,8 @@
 	</div>
 </div>
 
-<div id="screenshots" class="bg-base-200 min-h-screen flex flex-col justify-center">
+<div class="bg-base-200 min-h-screen flex flex-col justify-center">
+	<a id="screenshots" aria-label="Screenshots section anchor"></a>
 	<div class="text-center mb-10">
 		<h1 class="text-5xl font-bold">Screenshots 📸</h1>
 		<p class="pt-6">Some screenshots</p>
@@ -321,7 +322,8 @@
 	</div>
 </div>
 
-<div id="installation" class="bg-base-200 min-h-screen flex flex-col justify-center">
+<div class="bg-base-200 min-h-screen flex flex-col justify-center">
+	<a id="installation" aria-label="Installation section anchor"></a>
 	<div class="text-center mb-10">
 		<h1 class="text-5xl font-bold">Installation 🚀</h1>
 		<p class="pt-6">How to install the theme</p>
@@ -360,7 +362,9 @@
 		</p>
 	</div>
 </div>
-<div id="get-involved" class="hero bg-base-200 min-h-screen">
+
+<div class="hero bg-base-200 min-h-screen">
+	<a id="get-involved" aria-label="Get involved section anchor"></a>
 	<div class="hero-content text-center">
 		<div class="max-w-md">
 			<h1 class="text-5xl font-bold">Get involved ❤️</h1>
