@@ -23,9 +23,7 @@ end
 -- return a new color with the key set to given value
 local function make_abs_fn(color, key)
   return function(abs_value)
-    if type(abs_value) ~= "number" then
-      error("Must provide number to HSL modifiers", 0)
-    end
+    if type(abs_value) ~= "number" then error("Must provide number to HSL modifiers", 0) end
     local new_values = { h = color.h, s = color.s, l = color.l }
     new_values[key] = new_values[key] + abs_value
     return new_values
@@ -37,9 +35,7 @@ end
 -- return a new color with the key lerped by given value
 local function make_lerp_fn(color, key)
   return function(percent)
-    if type(percent) ~= "number" then
-      error("Must provide number to HSL modifiers", 0)
-    end
+    if type(percent) ~= "number" then error("Must provide number to HSL modifiers", 0) end
 
     -- we never modifiy the caller
     local new_values = { h = color.h, s = color.s, l = color.l }
@@ -56,26 +52,18 @@ local function make_lerp_fn(color, key)
 end
 
 -- (color) -> (n) -> {h + n, s, l}
-local function op_rotate(color)
-  return make_abs_fn(color, "h")
-end
+local function op_rotate(color) return make_abs_fn(color, "h") end
 
 -- (color) -> (n) -> {h, s lerp n, l}
-local function op_saturate(color)
-  return make_lerp_fn(color, "s")
-end
+local function op_saturate(color) return make_lerp_fn(color, "s") end
 
 -- (color) -> (n) -> {h, s + n, l}
-local function op_abs_saturate(color)
-  return make_abs_fn(color, "s")
-end
+local function op_abs_saturate(color) return make_abs_fn(color, "s") end
 
 -- (color) -> (n) -> {h, s lerp -n, l}
 local function op_desaturate(color)
   return function(percent)
-    if type(percent) ~= "number" then
-      error("Must provide number to HSL modifiers", 0)
-    end
+    if type(percent) ~= "number" then error("Must provide number to HSL modifiers", 0) end
     return make_lerp_fn(color, "s")(-percent)
   end
 end
@@ -83,29 +71,21 @@ end
 -- (color) -> (n) -> {h, s - n, l}
 local function op_abs_desaturate(color)
   return function(abs_value)
-    if type(abs_value) ~= "number" then
-      error("Must provide number to HSL modifiers", 0)
-    end
+    if type(abs_value) ~= "number" then error("Must provide number to HSL modifiers", 0) end
     return make_abs_fn(color, "s")(-abs_value)
   end
 end
 
 -- (color) -> (n) -> {h, s, l lerp n}
-local function op_lighten(color)
-  return make_lerp_fn(color, "l")
-end
+local function op_lighten(color) return make_lerp_fn(color, "l") end
 
 -- (color) -> (n) -> {h, s, l + n}
-local function op_abs_lighten(color)
-  return make_abs_fn(color, "l")
-end
+local function op_abs_lighten(color) return make_abs_fn(color, "l") end
 
 -- (color) -> (n) -> {h, s, l lerp -n}
 local function op_darken(color)
   return function(percent)
-    if type(percent) ~= "number" then
-      error("Must provide number to HSL modifiers", 0)
-    end
+    if type(percent) ~= "number" then error("Must provide number to HSL modifiers", 0) end
     return make_lerp_fn(color, "l")(-percent)
   end
 end
@@ -113,9 +93,7 @@ end
 -- (color) -> (n) -> {h, s, l - n}
 local function op_abs_darken(color)
   return function(abs_value)
-    if type(abs_value) ~= "number" then
-      error("Must provide number to HSL modifiers", 0)
-    end
+    if type(abs_value) ~= "number" then error("Must provide number to HSL modifiers", 0) end
     return make_abs_fn(color, "l")(-abs_value)
   end
 end
@@ -165,9 +143,7 @@ end
 -- (color) -> (n) -> {n, s, l}
 local function op_hue(color)
   return function(hue)
-    if type(hue) ~= "number" then
-      error("Must provide number to HSL modifiers", 0)
-    end
+    if type(hue) ~= "number" then error("Must provide number to HSL modifiers", 0) end
     return { h = hue, s = color.s, l = color.l }
   end
 end
@@ -175,9 +151,7 @@ end
 -- (color) -> (n) -> {h, n, l}
 local function op_saturation(color)
   return function(saturation)
-    if type(saturation) ~= "number" then
-      error("Must provide number to HSL modifiers", 0)
-    end
+    if type(saturation) ~= "number" then error("Must provide number to HSL modifiers", 0) end
     return { h = color.h, s = saturation, l = color.l }
   end
 end
@@ -185,9 +159,7 @@ end
 -- (color) -> (n) -> {h, s, n}
 local function op_lightness(color)
   return function(lightness)
-    if type(lightness) ~= "number" then
-      error("Must provide number to HSL modifiers", 0)
-    end
+    if type(lightness) ~= "number" then error("Must provide number to HSL modifiers", 0) end
     return { h = color.h, s = color.s, l = lightness }
   end
 end
@@ -242,21 +214,11 @@ local function decorate_hsl_table(color, to_hex_fn)
   return setmetatable({}, {
     -- it's hsl colors all the way down
     __index = function(_, key_name)
-      if key_name == "h" then
-        return color.h
-      end
-      if key_name == "s" then
-        return color.s
-      end
-      if key_name == "l" then
-        return color.l
-      end
-      if key_name == "hsl" then
-        return { h = color.h, s = color.s, l = color.l }
-      end
-      if key_name == "hex" then
-        return to_hex_fn(color)
-      end
+      if key_name == "h" then return color.h end
+      if key_name == "s" then return color.s end
+      if key_name == "l" then return color.l end
+      if key_name == "hsl" then return { h = color.h, s = color.s, l = color.l } end
+      if key_name == "hex" then return to_hex_fn(color) end
       if key_name == "rgb" then
         local hex = to_hex_fn(color)
         local cnv = require("lush.vivid.rgb.convert")
@@ -281,22 +243,14 @@ local function decorate_hsl_table(color, to_hex_fn)
     end,
 
     -- possibly this won't be useless, but for now disable
-    __newindex = function(_, _, _)
-      error("Member setting disabled", 2)
-    end,
+    __newindex = function(_, _, _) error("Member setting disabled", 2) end,
 
-    __tostring = function(hsl)
-      return to_hex_fn(hsl)
-    end,
+    __tostring = function(hsl) return to_hex_fn(hsl) end,
 
-    __concat = function(lhs, rhs)
-      return tostring(lhs) .. tostring(rhs)
-    end,
+    __concat = function(lhs, rhs) return tostring(lhs) .. tostring(rhs) end,
 
     -- if we call, return the raw value
-    __call = function()
-      return color
-    end,
+    __call = function() return color end,
   })
 end
 
