@@ -24,7 +24,11 @@ const getInstallCode = async (shiki: Shiki, method: InstallationMethod) => {
 };
 
 export const load = async () => {
-  const shiki = await mdsvexShiki({});
+  const shiki = await mdsvexShiki({
+    shikiOptions: {
+      langs: ['lua']
+    }
+  });
 
   const languagesCategoryData = await getCategoryData(CategoryName.LANGUAGES);
   const pluginsCategoryData = await getCategoryData(CategoryName.PLUGINS);

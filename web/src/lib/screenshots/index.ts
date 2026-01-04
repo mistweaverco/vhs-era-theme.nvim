@@ -25,7 +25,9 @@ interface ScreenshotModule {
 }
 
 // screenshots/languages-or-plugins/name/screenshot-001.md
-const ALL_SCREENSHOT_FILES = import.meta.glob<ScreenshotModule>('/src/data/screenshots/*/*/*.md');
+const ALL_SCREENSHOT_FILES = import.meta.glob<ScreenshotModule>('/src/data/screenshots/*/*/*.md', {
+  eager: false
+});
 
 /**
  * Fetch all screenshots markdown definition files

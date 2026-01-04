@@ -5,6 +5,10 @@ import adapter from '@sveltejs/adapter-static';
 import { mdsvex } from 'mdsvex';
 import type { PreprocessorGroup } from 'svelte/compiler';
 
+const mdsvexConfig = mdsvex({
+  extension: '.md'
+}) as PreprocessorGroup;
+
 const config: Config = {
   kit: {
     prerender: {
@@ -20,9 +24,7 @@ const config: Config = {
     vitePreprocess({
       script: true
     }),
-    mdsvex({
-      extension: '.md'
-    }) as PreprocessorGroup
+    mdsvexConfig
   ]
 };
 

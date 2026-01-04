@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { copyAction } from '@mistweaverco/mdsvex-shiki';
+	import { copyAction } from '@mistweaverco/mdsvex-shiki/copyAction';
 	import '@fortawesome/fontawesome-free/css/all.min.css';
 	import '@mistweaverco/mdsvex-shiki/styles.css';
 	import '../app.css';

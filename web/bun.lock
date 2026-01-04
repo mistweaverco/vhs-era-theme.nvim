@@ -7,7 +7,7 @@
       "devDependencies": {
         "@eslint/js": "9.22.0",
         "@fortawesome/fontawesome-free": "7.1.0",
-        "@mistweaverco/mdsvex-shiki": "1.1.1",
+        "@mistweaverco/mdsvex-shiki": "1.3.0",
         "@sveltejs/adapter-static": "3.0.10",
         "@sveltejs/kit": "2.47.3",
         "@sveltejs/vite-plugin-svelte": "6.2.1",
@@ -136,7 +136,7 @@
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.25", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ=="],
 
-    "@mistweaverco/mdsvex-shiki": ["@mistweaverco/mdsvex-shiki@1.1.1", "", { "dependencies": { "@shikijs/transformers": "3.19.0", "shiki": "3.19.0" }, "peerDependencies": { "typescript": "5.9.3" } }, "sha512-YDSVhX/IvZuSe1lFkMI66oX/BiVOvoxVytR38QwnJodjPfF1+P7twCsIKHB617VNrOB55HjtLghewr+ftNtI2Q=="],
+    "@mistweaverco/mdsvex-shiki": ["@mistweaverco/mdsvex-shiki@1.3.0", "", { "dependencies": { "@shikijs/transformers": "3.19.0", "shiki": "3.19.0" }, "peerDependencies": { "typescript": "5.9.3" } }, "sha512-KjoeuWsZnPShP5vrN1bm7u35UKjVMv13bxoV4rdIPCz/6XZYxOzpN9bv/pq4Yij7DCOQXmM2Ivx6N3ywsb7eRw=="],
 
     "@nodelib/fs.scandir": ["@nodelib/fs.scandir@2.1.5", "", { "dependencies": { "@nodelib/fs.stat": "2.0.5", "run-parallel": "^1.1.9" } }, "sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g=="],
 
