@@ -4,10 +4,18 @@
 
 # vhs-era-theme.nvim
 
-![Lua](https://img.shields.io/badge/Made%20with%20Lua-blueviolet.svg?style=for-the-badge&logo=lua)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/mistweaverco/vhs-era-theme.nvim?style=for-the-badge)](https://github.com/mistweaverco/vhs-era-theme.nvim/releases/latest)
 
-[Requirements](#requirements) • [Install](#install) • [Configuration](#configuration) • [Cache](#cache) • [Supported Plugins](#supported-plugins)
+[![Made with love][badge-made-with-love]][contributors]
+[![Development status][badge-development-status]][development-status]
+[![Our manifesto][badge-our-manifesto]][our-manifesto]
+![Made with lua][badge-made-with-lua]
+[![Latest release][badge-latest-release]][latest-release]
+
+[Requirements](#requirements) •
+[Install](#install) •
+[Configuration](#configuration) •
+[Cache](#cache) •
+[Supported Plugins](#supported-plugins)
 
 <p></p>
 
@@ -24,7 +32,10 @@ and the physical nature of tapes that had to
 be rewound and could degrade over time.
 
 This retro colorscheme for Neovim, is inspired by the aesthetics of this era.
+
 <p></p>
+
+[![Screenshot showing TypeScript code][screenshot]]
 
 </div>
 
@@ -93,3 +104,17 @@ Currently supported plugins, others might work but are not tested:
 - [treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
 - [trouble.nvim](https://github.com/folke/trouble.nvim)
 - [which-key.nvim](https://github.com/folke/which-key.nvim)
+
+
+
+[badge-made-with-lua]: https://mistweaverco.com/assets/badges/lua.svg
+[badge-development-status]: https://mistweaverco.com/assets/badges/development-status.svg
+[badge-our-manifesto]: https://mistweaverco.com/assets/badges/our-manifesto.svg
+[badge-made-with-love]: https://mistweaverco.com/assets/badges/made-with-love.svg
+[our-manifesto]: https://mistweaverco.com/manifesto
+[development-status]: https://mistweaverco.com/roadmap?filter=vhs-era-theme.nvim
+[contributors]: https://github.com/mistweaverco/vhs-era-theme.nvim/graphs/contributors
+[logo]: assets/logo.svg
+[badge-latest-release]: https://img.shields.io/github/v/release/mistweaverco/vhs-era-theme.nvim?style=for-the-badge
+[latest-release]: https://github.com/mistweaverco/vhs-era-theme.nvim/releases/latest
+[screenshot]: web/static/assets/screenshots/languages/typescript/snap.typescript.png
