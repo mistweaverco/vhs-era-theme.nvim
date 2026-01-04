@@ -13,6 +13,7 @@
 
 [Requirements](#requirements) •
 [Install](#install) •
+[Screenshots][screenshots] •
 [Configuration](#configuration) •
 [Cache](#cache) •
 [Supported Plugins](#supported-plugins)
@@ -36,6 +37,8 @@ This retro colorscheme for Neovim, is inspired by the aesthetics of this era.
 <p></p>
 
 ![Screenshot showing TypeScript code][screenshot]
+
+[More screenshots][screenshots]
 
 </div>
 
@@ -118,3 +121,4 @@ Currently supported plugins, others might work but are not tested:
 [badge-latest-release]: https://img.shields.io/github/v/release/mistweaverco/vhs-era-theme.nvim?style=for-the-badge
 [latest-release]: https://github.com/mistweaverco/vhs-era-theme.nvim/releases/latest
 [screenshot]: web/static/assets/screenshots/languages/typescript/snap.typescript.png
+[screenshots]: https://neovim.theme.vhs-era.com/#screenshots
