@@ -35,7 +35,7 @@ This retro colorscheme for Neovim, is inspired by the aesthetics of this era.
 
 <p></p>
 
-[![Screenshot showing TypeScript code][screenshot]]
+![Screenshot showing TypeScript code][screenshot]
 
 </div>
 
