@@ -8,19 +8,13 @@ local function is_valid_key(key)
   return key == "fg" or key == "bg" or key == "sp" or key == "gui" or key == "blend" or key == "italic" or key == "bold"
 end
 
-local is_valid_color_table = function(color)
-  return type(color) == "table" and color.hex ~= nil
-end
+local is_valid_color_table = function(color) return type(color) == "table" and color.hex ~= nil end
 
-local is_embedded_table = function(color)
-  return type(color) == "table" and color.hex == nil
-end
+local is_embedded_table = function(color) return type(color) == "table" and color.hex == nil end
 
 local merge_groups = function(group_def_table, group_def_table_value)
   for key, value in pairs(group_def_table_value) do
-    if group_def_table[key] == nil then
-      group_def_table[key] = value
-    end
+    if group_def_table[key] == nil then group_def_table[key] = value end
   end
 end
 
@@ -31,12 +25,8 @@ M.parse = function(colors)
       return
     end
     for group_def_table_key, group_def_table_value in pairs(group_def_table) do
-      if is_embedded_table(group_def_table_value) then
-        merge_groups(group_def_table, group_def_table_value)
-      end
-      if is_valid_key(group_def_table_key) == false then
-        group_def_table[group_def_table_key] = nil
-      end
+      if is_embedded_table(group_def_table_value) then merge_groups(group_def_table, group_def_table_value) end
+      if is_valid_key(group_def_table_key) == false then group_def_table[group_def_table_key] = nil end
     end
   end
 

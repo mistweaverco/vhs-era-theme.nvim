@@ -1,8 +1,6 @@
 -- Support module to convert between RGB and HEX
 
-local function rgb_to_hex(rgb)
-  return string.format("#%02X%02X%02X", rgb.r, rgb.g, rgb.b)
-end
+local function rgb_to_hex(rgb) return string.format("#%02X%02X%02X", rgb.r, rgb.g, rgb.b) end
 
 local function hex_to_rgb(hex_str)
   -- normalise

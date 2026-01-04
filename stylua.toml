@@ -1,11 +1,12 @@
-column_width = 120
-line_endings = "Unix"
 indent_type = "Spaces"
 indent_width = 2
+column_width = 120
+collapse_simple_statement = "Always"
+syntax = "Lua51"
 quote_style = "AutoPreferDouble"
 call_parentheses = "Always"
-collapse_simple_statement = "Never"
-
+line_endings = "Unix"
+space_after_function_names = "Never"
+block_newline_gaps = "Never"
 [sort_requires]
-enabled = false
-
+enabled = true

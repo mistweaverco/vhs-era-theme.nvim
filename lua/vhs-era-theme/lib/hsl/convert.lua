@@ -14,21 +14,11 @@ local function hsl_to_rgb(hsl)
     r, g, b = l, l, l -- achromatic
   else
     local function hue2rgb(p, q, t)
-      if t < 0 then
-        t = t + 1
-      end
-      if t > 1 then
-        t = t - 1
-      end
-      if t < 1 / 6 then
-        return p + (q - p) * 6 * t
-      end
-      if t < 1 / 2 then
-        return q
-      end
-      if t < 2 / 3 then
-        return p + (q - p) * (2 / 3 - t) * 6
-      end
+      if t < 0 then t = t + 1 end
+      if t > 1 then t = t - 1 end
+      if t < 1 / 6 then return p + (q - p) * 6 * t end
+      if t < 1 / 2 then return q end
+      if t < 2 / 3 then return p + (q - p) * (2 / 3 - t) * 6 end
       return p
     end
 
@@ -71,9 +61,7 @@ local function rgb_to_hsl(rgb)
     end
     if max == r then
       h = (g - b) / d
-      if g < b then
-        h = h + 6
-      end
+      if g < b then h = h + 6 end
     elseif max == g then
       h = (b - r) / d + 2
     elseif max == b then

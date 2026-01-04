@@ -4,9 +4,7 @@ local snum =
   { [tostring(1 / 0)] = "1/0 --[[math.huge]]", [tostring(-1 / 0)] = "-1/0 --[[-math.huge]]", [tostring(0 / 0)] = "0/0" }
 local badtype = { thread = true, userdata = true, cdata = true }
 local getmetatable = debug and debug.getmetatable or getmetatable
-local pairs = function(t)
-  return next, t
-end -- avoid using __pairs in Lua 5.2+
+local pairs = function(t) return next, t end -- avoid using __pairs in Lua 5.2+
 local keyword, globals, G = {}, {}, (_G or _ENV)
 for _, k in ipairs({
   "and",
@@ -89,9 +87,7 @@ local function s(t, opts)
   local alphanumsort = type(opts.sortkeys) == "function" and opts.sortkeys
     or function(k, o, n) -- k=keys, o=originaltable, n=padding
       local maxn, to = tonumber(n) or 12, { number = "a", string = "b" }
-      local function padnum(d)
-        return ("%0" .. tostring(maxn) .. "d"):format(tonumber(d))
-      end
+      local function padnum(d) return ("%0" .. tostring(maxn) .. "d"):format(tonumber(d)) end
       table.sort(k, function(a, b)
         -- sort numeric keys first: k[key] is not nil for numerical keys
         return (k[a] ~= nil and 0 or to[type(a)] or "z") .. (tostring(a):gsub("%d+", padnum))
@@ -109,12 +105,8 @@ local function s(t, opts)
     end
     -- protect from those cases where __tostring may fail
     if type(mt) == "table" and metatostring ~= false then
-      local to, tr = pcall(function()
-        return mt.__tostring(t)
-      end)
-      local so, sr = pcall(function()
-        return mt.__serialize(t)
-      end)
+      local to, tr = pcall(function() return mt.__tostring(t) end)
+      local so, sr = pcall(function() return mt.__serialize(t) end)
       if to or so then -- knows how to serialize itself
         seen[t] = insref or spath
         t = so and sr or tr
@@ -122,16 +114,10 @@ local function s(t, opts)
       end -- new value falls through to be serialized
     end
     if ttype == "table" then
-      if level >= maxl then
-        return tag .. "{}" .. comment("maxlvl", level)
-      end
+      if level >= maxl then return tag .. "{}" .. comment("maxlvl", level) end
       seen[t] = insref or spath
-      if next(t) == nil then
-        return tag .. "{}" .. comment(t, level)
-      end -- table empty
-      if maxlen and maxlen < 0 then
-        return tag .. "{}" .. comment("maxlen", level)
-      end
+      if next(t) == nil then return tag .. "{}" .. comment(t, level) end -- table empty
+      if maxlen and maxlen < 0 then return tag .. "{}" .. comment("maxlen", level) end
       local maxn, o, out = math.min(#t, maxnum or #t), {}, {}
       for key = 1, maxn do
         o[key] = key
@@ -145,12 +131,8 @@ local function s(t, opts)
           end
         end
       end
-      if maxnum and #o > maxnum then
-        o[maxnum + 1] = nil
-      end
-      if opts.sortkeys and #o > maxn then
-        alphanumsort(o, t, opts.sortkeys)
-      end
+      if maxnum and #o > maxnum then o[maxnum + 1] = nil end
+      if opts.sortkeys and #o > maxn then alphanumsort(o, t, opts.sortkeys) end
       local sparse = sparse and #o > maxn -- disable sparsness if only numeric keys (shorter output)
       for n, key in ipairs(o) do
         local value, ktype, plainindex = t[key], type(key), n <= maxn and not sparse
@@ -174,9 +156,7 @@ local function s(t, opts)
           out[#out + 1] = val2str(value, key, indent, nil, seen[t], plainindex, level + 1)
           if maxlen then
             maxlen = maxlen - #out[#out]
-            if maxlen < 0 then
-              break
-            end
+            if maxlen < 0 then break end
           end
         end
       end
@@ -190,9 +170,7 @@ local function s(t, opts)
       return tag .. globerr(t, level)
     elseif ttype == "function" then
       seen[t] = insref or spath
-      if opts.nocode then
-        return tag .. "function() --[[..skipped..]] end" .. comment(t, level)
-      end
+      if opts.nocode then return tag .. "function() --[[..skipped..]] end" .. comment(t, level) end
       local ok, res = pcall(string.dump, t)
       local func = ok and "((loadstring or load)(" .. safestr(res) .. ",'@serialized'))" .. comment(t, level)
       return tag .. (func or globerr(t, level))
@@ -211,23 +189,15 @@ end
 local function deserialize(data, opts)
   local env = (opts and opts.safe == false) and G
     or setmetatable({}, {
-      __index = function(t, k)
-        return t
-      end,
-      __call = function(t, ...)
-        error("cannot call functions")
-      end,
+      __index = function(t, k) return t end,
+      __call = function(t, ...) error("cannot call functions") end,
     })
   local f, res = (loadstring or load)("return " .. data, nil, nil, env)
   if not f then
     f, res = (loadstring or load)(data, nil, nil, env)
   end
-  if not f then
-    return f, res
-  end
-  if setfenv then
-    setfenv(f, env)
-  end
+  if not f then return f, res end
+  if setfenv then setfenv(f, env) end
   return pcall(f)
 end
 
@@ -246,13 +216,7 @@ return {
   _VERSION = v,
   serialize = s,
   load = deserialize,
-  dump = function(a, opts)
-    return s(a, merge({ name = "_", compact = true, sparse = true }, opts))
-  end,
-  line = function(a, opts)
-    return s(a, merge({ sortkeys = true, comment = true }, opts))
-  end,
-  block = function(a, opts)
-    return s(a, merge({ indent = "  ", sortkeys = true, comment = true }, opts))
-  end,
+  dump = function(a, opts) return s(a, merge({ name = "_", compact = true, sparse = true }, opts)) end,
+  line = function(a, opts) return s(a, merge({ sortkeys = true, comment = true }, opts)) end,
+  block = function(a, opts) return s(a, merge({ indent = "  ", sortkeys = true, comment = true }, opts)) end,
 }

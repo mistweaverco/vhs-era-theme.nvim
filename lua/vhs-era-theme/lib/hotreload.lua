@@ -1,4 +1,4 @@
-local uv = vim.loop
+local uv = vim.uv
 
 -- Store the handle and path to keep them alive
 local watch_handle = nil
@@ -8,22 +8,19 @@ local function reload_colorscheme()
   -- Protect critical modules from being cleared
   local hotreload_module = package.loaded["vhs-era-theme.lib.hotreload"]
   local init_module = package.loaded["vhs-era-theme"]
-  
+
   -- Clear module cache for colorscheme-related modules
-  package.loaded["vhs-era-theme.palette.colors"] = nil
-  package.loaded["vhs-era-theme.colorscheme"] = nil
-  
+  package.loaded["vhs-era-theme.colors"] = nil
+
   -- Reload the colorscheme
   require("vhs-era-theme").reload()
-  
+
   -- Restore protected modules if they were cleared
   if not package.loaded["vhs-era-theme.lib.hotreload"] and hotreload_module then
     package.loaded["vhs-era-theme.lib.hotreload"] = hotreload_module
   end
-  if not package.loaded["vhs-era-theme"] and init_module then
-    package.loaded["vhs-era-theme"] = init_module
-  end
-  
+  if not package.loaded["vhs-era-theme"] and init_module then package.loaded["vhs-era-theme"] = init_module end
+
   -- Restart watcher after reload completes (schedule to avoid interfering with current event)
   if watch_path then
     vim.schedule(function()
@@ -43,9 +40,7 @@ local function on_event(err, filename, events)
   if err then
     vim.notify("Error in vhs-era-theme.nvim hot_reload fs_event: " .. err, vim.log.levels.ERROR)
   else
-    if events.change == nil then
-      return
-    end
+    if events.change == nil then return end
     reload_colorscheme()
   end
 end
@@ -55,9 +50,7 @@ local function event_cb(err, filename, events)
   if err then
     vim.notify("Error in vhs-era-theme.nvim hot_reload fs_event: " .. err, vim.log.levels.ERROR)
   else
-    vim.schedule(function()
-      on_event(err, filename, events)
-    end)
+    vim.schedule(function() on_event(err, filename, events) end)
   end
 end
 
