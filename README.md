@@ -106,6 +106,8 @@ Currently supported plugins, others might work but are not tested:
 - [todo-comments.nvim](https://github.com/folke/todo-comments.nvim)
 - [treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
 - [trouble.nvim](https://github.com/folke/trouble.nvim)
+- [flash.nvim](https://github.com/folke/flash.nvim)
+- [nvim-jump](https://github.com/yorickpeterse/nvim-jump/tree/main)
 - [which-key.nvim](https://github.com/folke/which-key.nvim)
 
 
