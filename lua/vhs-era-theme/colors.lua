@@ -27,7 +27,8 @@ local t = {
   -- Workspace colors
   primary = hsl("#78a9ff"), -- base09
   selection = hsl("#353535"),
-  search = hsl("#484848"),
+  search = hsl("#ffcc66"),
+  searchBG = hsl("#353535"),
   diffAdd = hsl("#42be65"), -- base13
   diffChange = hsl("#ffcc66"), -- base09
   diffDelete = hsl("#ee5396"), -- base10
@@ -107,7 +108,7 @@ colors["LineNr"] = { fg = t.comment }
 colors["CursorLineNr"] = { fg = t.comment }
 
 -- Search
-colors["Search"] = { bg = t.search }
+colors["Search"] = { bg = t.searchBG, fg = t.search }
 colors["IncSearch"] = { bg = t.cursor.mix(t.bg, 10), fg = t.bg }
 colors["CurSearch"] = colors["Search"]
 
@@ -745,7 +746,7 @@ colors["yamlNodeTag"] = colors["Statement"]
 colors["FlashBackdrop"] = { fg = t.fg, bg = t.bg }
 colors["FlashMatch"] = { fg = t.selection, bg = t.grey40 }
 colors["FlashCurrent"] = { fg = t.fg, bg = t.bg }
-colors["FlashLabel"] = { fg = t.primary, bg = t.bg }
+colors["FlashLabel"] = { fg = t.search, bg = t.searchBG }
 colors["FlashPrompt"] = { fg = t.fg, bg = t.bg }
 colors["FlashCursor"] = { fg = t.fg, bg = t.bg }
 
