@@ -125,11 +125,12 @@ colors["lCursor"] = colors["Cursor"]
 colors["CursorIM"] = colors["Cursor"]
 colors["Directory"] = { fg = t.keyword }
 
--- Diffs
-colors["DiffAdd"] = { bg = t.bg.darken(25), fg = t.diffAdd.desaturate(40).mix(t.bg, 30) }
-colors["DiffChange"] = { bg = t.bg.darken(25), fg = t.diffChange.desaturate(40).mix(t.bg, 30) }
-colors["DiffDelete"] = { bg = t.bg.darken(25), fg = t.diffDelete.desaturate(40).mix(t.bg, 30) }
-colors["DiffText"] = { bg = t.diffInline.desaturate(40).mix(t.bg, 35), fg = t.bg.darken(30) }
+-- Diffs (vivid tinted backgrounds, clear line vs character distinction)
+colors["DiffAdd"] = { bg = t.added.mix(t.bg, 75), fg = t.added }
+colors["DiffChange"] = { bg = t.changed.mix(t.bg, 75), fg = t.fg }
+colors["DiffDelete"] = { bg = t.deleted.mix(t.bg, 75), fg = t.deleted }
+colors["DiffText"] = { bg = t.diffText.mix(t.bg, 75), fg = t.fg, bold = true }
+colors["DiffTextAdd"] = { bg = t.diffInlineAdd.mix(t.bg, 75), fg = t.fg, bold = true }
 
 -- Misc UI
 colors["EndOfBuffer"] = { fg = t.punctuation }
@@ -557,8 +558,10 @@ colors["DiffviewFilePanelConflicts"] = { fg = t.number, bg = t.number.mix(t.bg, 
 colors["DiffviewFolderName"] = colors["Directory"]
 colors["DiffviewPrimary"] = { fg = t.keyword, bg = t.keyword.mix(t.bg, 90) }
 colors["DiffviewSecondary"] = { fg = t.tag, bg = t.tag.mix(t.bg, 90) }
-colors["DiffviewDiffAdd"] = { bg = t.added.mix(t.bg, 90), fg = t.added }
-colors["DiffviewDiffDelete"] = { bg = t.deleted.mix(t.bg, 90), fg = t.added }
+colors["DiffviewDiffAdd"] = { bg = t.added.mix(t.bg, 15), fg = t.added }
+colors["DiffviewDiffChange"] = { bg = t.changed.mix(t.bg, 15), fg = t.fg }
+colors["DiffviewDiffDelete"] = { bg = t.deleted.mix(t.bg, 15), fg = t.deleted }
+colors["DiffviewDiffText"] = { bg = t.diffText.mix(t.bg, 15), fg = t.fg, bold = true }
 
 -- vim-fugitive
 colors["diffAdded"] = { fg = t.added, bg = t.diffInline.mix(t.bg, 15) }
